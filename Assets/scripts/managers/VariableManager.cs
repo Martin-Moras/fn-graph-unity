@@ -10,7 +10,7 @@ public class VariableManager : MonoBehaviour
     public GameObject s;
     public GameObject a;
     #endregion
-
+    public float nodeSelectionRadius;
 
     #region Singleton
     public static VariableManager Instance { get; private set;}

@@ -25,6 +25,10 @@ public class Connection : MonoBehaviour
         manageJoint();
         updatePos();
     }
+    public void connectNodes(Node inputNode = null, Node outputNode = null){
+        this.inputNode = inputNode.transform;
+        this.outputNode = outputNode.transform;
+    }
    
     private void updatePos(){
         Vector3[] positions = { joint.transform.position, joint.connectedBody.position };
