@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 4529434955059103929}
   - component: {fileID: 2587845568449647521}
   m_Layer: 0
-  m_Name: Connection
+  m_Name: ConnectionPrefab
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

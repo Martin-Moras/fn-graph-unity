@@ -1,15 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Unity.Mathematics;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UIElements;
 
 public class NetManager : MonoBehaviour
 {
-    public List<Node> allNodes;
-
+    public string id ;
     #region Singleton
     
     public static NetManager Instance { get; private set;}
@@ -23,35 +22,113 @@ public class NetManager : MonoBehaviour
     void Awake()
     {
         SingletonizeThis();
-        allNodes = getAllNodes().ToList();
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+
     }
     void newNode(){
-        Instantiate(VariableManager.Instance.Node);
+        var newNode =Instantiate(VariableManager.Instance.Node);
     }
-    private void nodeSelected(){
-        foreach (var node in allNodes){
+    private void NodeSelected(){
+    
+        foreach (var node in getAllNodes()){
+            //if node is in "nodeSelectionRadius"
             if (((Vector2)node.transform.position - InputManager.Instance.mousePosWorld).magnitude > VariableManager.Instance.nodeSelectionRadius) continue;
-            var newNode = Instantiate(VariableManager.Instance.Node, node.transform.position, quaternion.identity);
-            newNode.GetComponent<SpriteRenderer>().color = Color.red;
-            var newConnection = Instantiate(VariableManager.Instance.Connection).GetComponent<Connection>();
-            newConnection.connectNodes(node, newNode.GetComponent<Node>());
+
+            //connectNewNode(node);
+            node.identifiers.Add("selected");
+            connectNewNode(node);
         }
     }
-    private Node[] getAllNodes(){
+    private void Load(){
+        var clas = JsonManager.LoadClassFromJson<JsonNet>(Application.dataPath);
+        return;
+    }
+    private void Save(){
+        var d = JsonManager.SaveClassAsJson(CreateJsonNet(), Application.dataPath);
+        return;
+    }
+    
+    public JsonNet CreateJsonNet(){
+        var net = new JsonNet();
+        net.name = "name";
+        //Set nodes
+        var allNodes = getAllNodes();
+        net.nodes = new JsonNode[allNodes.Length];
+        for (int i = 0; i < net.nodes.Length; i++)
+        {
+            var node = allNodes[i];
+            var jsonNode = new JsonNode();
+            jsonNode.id = node.id;
+            //Collor
+            var nodeSprite = node.GetComponent<SpriteRenderer>();
+            jsonNode.colorR = nodeSprite.color.r;
+            jsonNode.colorG = nodeSprite.color.g;
+            jsonNode.colorB = nodeSprite.color.b;
+            jsonNode.colorA = nodeSprite.color.a; 
+
+            jsonNode.identifiers = node.identifiers.ToArray();
+            jsonNode.JsonConnectionIds = node.connections.Select(item => item.id).ToArray();;
+
+            net.nodes[i] = jsonNode;
+        }
+        //Set connections
+        var allConnections = getAllConnections();
+        net.connections = new JsonConnection[allConnections.Length];
+        for (int i = 0; i < net.connections.Length; i++)
+        {
+            var Connection = allConnections[i];
+            var jsonConnection = new JsonConnection();
+            jsonConnection.id = Connection.id;
+            //Collor
+            var connectionSprite = Connection.GetComponent<LineRenderer>();
+            jsonConnection.colorR = 255;
+            jsonConnection.colorG = 0;
+            jsonConnection.colorB = 0;
+            jsonConnection.colorA = 0; 
+        
+
+            jsonConnection.identifiers = Connection.identifiers.ToArray();
+            jsonConnection.outputNodeId = Connection.inputNode.id;
+            jsonConnection.outputNodeId = Connection.id;
+
+            net.connections[i] = jsonConnection;
+        }
+        
+        return net;
+    }
+    public void connectNewNode(Node node){
+        //instantiate a new node
+            var newNode = Instantiate(VariableManager.Instance.Node, node.transform.position, quaternion.identity);
+            //collor node red
+            newNode.GetComponent<SpriteRenderer>().color = Color.red;
+            
+            connectNodes(node, newNode.GetComponent<Node>());
+    }
+    public Connection connectNodes(Node inputNode = null, Node outputNode = null){
+            var newConnection = Instantiate(VariableManager.Instance.Connection).GetComponent<Connection>();
+            newConnection.connectNodes(inputNode, outputNode);
+            return newConnection;
+    }
+    public Node[] getAllNodes(){
         return GameObject.FindObjectsOfType<Node>();
+    }
+    public Connection[] getAllConnections(){
+        return GameObject.FindObjectsOfType<Connection>();
     }
     void OnEnable(){
         InputManager.newNode += newNode;
-        InputManager.nodeSelected += nodeSelected;
+        InputManager.nodeSelected += NodeSelected;
+        InputManager.load += Load;
+        InputManager.save += Save;
     }
     void OnDisable(){
         InputManager.newNode -= newNode;
-        InputManager.nodeSelected -= nodeSelected;
+        InputManager.nodeSelected -= NodeSelected;
+        InputManager.load -= Load;
+        InputManager.save -= Save;
     }
 }

@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data.SqlTypes;
 using System.Runtime.InteropServices;
-using Unity.VisualScripting;
 using UnityEditor.Scripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -16,6 +15,8 @@ public class InputManager : MonoBehaviour
     public delegate void EventHandler();
     public static event EventHandler newNode;
     public static event EventHandler nodeSelected;
+    public static event EventHandler load;
+    public static event EventHandler save;
     #endregion
     #region Singleton
     public static InputManager Instance { get; private set;}
@@ -36,8 +37,15 @@ public class InputManager : MonoBehaviour
     }
     public void onNewNode(){
         if (newNode != null) newNode();
-    }public void onSelectNode(){
+    }
+    public void onSelectNode(){
         if (newNode != null) nodeSelected();
+    }
+    public void onLoad(){
+        if (newNode != null) load();
+    }
+    public void onSave(){
+        if (newNode != null) save();
     }
 
     void Update()
@@ -47,6 +55,8 @@ public class InputManager : MonoBehaviour
     private void manageInputs(){
         if (mainInput.mainScene.NewNode.triggered) onNewNode();
         if (mainInput.mainScene.Select.triggered) onSelectNode();
+        if (mainInput.mainScene.Load.triggered) onLoad();
+        if (mainInput.mainScene.Save.triggered) onSave();
         //Manage curson position
         mousePosScreen = Input.mousePosition;
         mousePosWorld = Camera.main.ScreenToWorldPoint(mousePosScreen);

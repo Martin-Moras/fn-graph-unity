@@ -1,13 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class Connection : MonoBehaviour
 {
-	[SerializeField] Transform inputNode;
-    [SerializeField] Transform outputNode;
+    public string id { get; private set; }
+    //selected
+    public List<string> identifiers;
+	[SerializeField] public Node inputNode;
+    [SerializeField] public Node outputNode;
 	TextMeshPro text;
     Color color;
 	SpringJoint2D joint;
@@ -26,8 +28,8 @@ public class Connection : MonoBehaviour
         updatePos();
     }
     public void connectNodes(Node inputNode = null, Node outputNode = null){
-        this.inputNode = inputNode.transform;
-        this.outputNode = outputNode.transform;
+        this.inputNode = inputNode;
+        this.outputNode = outputNode;
     }
    
     private void updatePos(){
@@ -36,8 +38,8 @@ public class Connection : MonoBehaviour
     }
     private void manageJoint(){
         if(joint == null){
-            joint = inputNode.AddComponent<SpringJoint2D>();
-            joint.connectedBody = outputNode.GetComponent<Rigidbody2D>();
+            joint = inputNode.gameObject.AddComponent<SpringJoint2D>();
+            joint.connectedBody = outputNode.gameObject.GetComponent<Rigidbody2D>();
             joint.autoConfigureDistance = false;
             joint.distance = 3;
         }

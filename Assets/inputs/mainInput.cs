@@ -44,6 +44,24 @@ public partial class @MainInput: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Load"",
+                    ""type"": ""Button"",
+                    ""id"": ""23472ed6-2f18-4021-a9b4-7797377218ad"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Save"",
+                    ""type"": ""Button"",
+                    ""id"": ""d4a8231d-53da-4e52-b556-5036ad7f97f3"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -79,6 +97,28 @@ public partial class @MainInput: IInputActionCollection2, IDisposable
                     ""action"": ""Select"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""cfa93652-949e-4b85-8c36-de0daa0cac33"",
+                    ""path"": ""<Keyboard>/l"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Load"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""ac505fdd-6872-40be-91c2-77edc4fa8614"",
+                    ""path"": ""<Keyboard>/k"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Save"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -106,6 +146,8 @@ public partial class @MainInput: IInputActionCollection2, IDisposable
         m_mainScene = asset.FindActionMap("mainScene", throwIfNotFound: true);
         m_mainScene_NewNode = m_mainScene.FindAction("NewNode", throwIfNotFound: true);
         m_mainScene_Select = m_mainScene.FindAction("Select", throwIfNotFound: true);
+        m_mainScene_Load = m_mainScene.FindAction("Load", throwIfNotFound: true);
+        m_mainScene_Save = m_mainScene.FindAction("Save", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -169,12 +211,16 @@ public partial class @MainInput: IInputActionCollection2, IDisposable
     private List<IMainSceneActions> m_MainSceneActionsCallbackInterfaces = new List<IMainSceneActions>();
     private readonly InputAction m_mainScene_NewNode;
     private readonly InputAction m_mainScene_Select;
+    private readonly InputAction m_mainScene_Load;
+    private readonly InputAction m_mainScene_Save;
     public struct MainSceneActions
     {
         private @MainInput m_Wrapper;
         public MainSceneActions(@MainInput wrapper) { m_Wrapper = wrapper; }
         public InputAction @NewNode => m_Wrapper.m_mainScene_NewNode;
         public InputAction @Select => m_Wrapper.m_mainScene_Select;
+        public InputAction @Load => m_Wrapper.m_mainScene_Load;
+        public InputAction @Save => m_Wrapper.m_mainScene_Save;
         public InputActionMap Get() { return m_Wrapper.m_mainScene; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -190,6 +236,12 @@ public partial class @MainInput: IInputActionCollection2, IDisposable
             @Select.started += instance.OnSelect;
             @Select.performed += instance.OnSelect;
             @Select.canceled += instance.OnSelect;
+            @Load.started += instance.OnLoad;
+            @Load.performed += instance.OnLoad;
+            @Load.canceled += instance.OnLoad;
+            @Save.started += instance.OnSave;
+            @Save.performed += instance.OnSave;
+            @Save.canceled += instance.OnSave;
         }
 
         private void UnregisterCallbacks(IMainSceneActions instance)
@@ -200,6 +252,12 @@ public partial class @MainInput: IInputActionCollection2, IDisposable
             @Select.started -= instance.OnSelect;
             @Select.performed -= instance.OnSelect;
             @Select.canceled -= instance.OnSelect;
+            @Load.started -= instance.OnLoad;
+            @Load.performed -= instance.OnLoad;
+            @Load.canceled -= instance.OnLoad;
+            @Save.started -= instance.OnSave;
+            @Save.performed -= instance.OnSave;
+            @Save.canceled -= instance.OnSave;
         }
 
         public void RemoveCallbacks(IMainSceneActions instance)
@@ -230,5 +288,7 @@ public partial class @MainInput: IInputActionCollection2, IDisposable
     {
         void OnNewNode(InputAction.CallbackContext context);
         void OnSelect(InputAction.CallbackContext context);
+        void OnLoad(InputAction.CallbackContext context);
+        void OnSave(InputAction.CallbackContext context);
     }
 }
