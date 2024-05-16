@@ -1,10 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Data.Common;
 using UnityEngine;
 
 public class Node : MonoBehaviour
 {
     List<Connection> connections;
+    List<string> identifiers;
     void Start()
     {
         
@@ -16,8 +18,3 @@ public class Node : MonoBehaviour
         
     }
 }
-/*
-connected node
-connection info (name, color ...)
-
-*/

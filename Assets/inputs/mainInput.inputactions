@@ -1,0 +1,57 @@
+{
+    "name": "mainInput",
+    "maps": [
+        {
+            "name": "mainScene",
+            "id": "50758617-850f-4d5e-9890-7727dd642a44",
+            "actions": [
+                {
+                    "name": "NewNode",
+                    "type": "Button",
+                    "id": "4f645a60-c0b8-4801-8a87-2506b5bf3fb8",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "Press",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "fb020ec3-fa62-40f7-8ce0-8b6e33bb21a1",
+                    "path": "<Keyboard>/e",
+                    "interactions": "Press",
+                    "processors": "",
+                    "groups": "Keyboard",
+                    "action": "NewNode",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "058525d6-b76e-4a90-b69b-fdac615c3eb3",
+                    "path": "<Keyboard>/r",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard",
+                    "action": "NewNode",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": [
+        {
+            "name": "Keyboard",
+            "bindingGroup": "Keyboard",
+            "devices": [
+                {
+                    "devicePath": "<Keyboard>",
+                    "isOptional": false,
+                    "isOR": false
+                }
+            ]
+        }
+    ]
+}
