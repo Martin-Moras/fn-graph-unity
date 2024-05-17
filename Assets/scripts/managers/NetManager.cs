@@ -1,8 +1,10 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Unity.Mathematics;
+using UnityEditorInternal;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -45,14 +47,34 @@ public class NetManager : MonoBehaviour
     }
     private void Load(){
         var clas = JsonManager.LoadClassFromJson<JsonNet>(Application.dataPath);
-        return;
-    }
-    private void Save(){
-        var d = JsonManager.SaveClassAsJson(CreateJsonNet(), Application.dataPath);
-        return;
+        var newNodes = new List<Node>();
+        //Instantiate nodes
+        foreach (var node in clas.nodes){
+            var newNodeObj = Instantiate(VariableManager.Instance.Node);
+            var newNode = newNodeObj.GetComponent<Node>();
+            newNode.NodeConstructor(node.id, node.identifiers.ToList(), new List<Connection>());
+            newNodes.Add(newNode);
+        }
+        //Instantiate connections
+        var newConnections = new List<Connection>();
+        foreach (var connection in clas.connections){
+            var newconnectionObj = Instantiate(VariableManager.Instance.Connection);
+            var newConnection = newconnectionObj.GetComponent<Connection>();
+            var asd = newNodes.Find(x=>x.id == connection.inputNodeId);
+            var das = newNodes.Find(x=>x.id == connection.outputNodeId);
+            newConnection.connectionConstructor(connection.id, connection.identifiers.ToList(), asd, das);
+            newConnections.Add(newConnection);
+        }
+        //connection to "node.connections)
+        foreach (var node in newNodes){
+            node.connections.AddRange(newConnections.FindAll(x=>x.inputNode == node));
+            node.connections.AddRange(newConnections.FindAll(x=>x.outputNode == node));
+        }
     }
     
-    public JsonNet CreateJsonNet(){
+    private void Save(){
+        var d = JsonManager.SaveClassAsJson(CreateJsonNet(), Application.dataPath);
+        JsonNet CreateJsonNet(){
         var net = new JsonNet();
         net.name = "name";
         //Set nodes
@@ -92,14 +114,17 @@ public class NetManager : MonoBehaviour
         
 
             jsonConnection.identifiers = Connection.identifiers.ToArray();
-            jsonConnection.outputNodeId = Connection.inputNode.id;
-            jsonConnection.outputNodeId = Connection.id;
+            jsonConnection.inputNodeId = Connection.inputNode.id;
+            jsonConnection.outputNodeId = Connection.outputNode.id;
 
             net.connections[i] = jsonConnection;
         }
         
         return net;
     }
+    }
+    
+    
     public void connectNewNode(Node node){
         //instantiate a new node
             var newNode = Instantiate(VariableManager.Instance.Node, node.transform.position, quaternion.identity);

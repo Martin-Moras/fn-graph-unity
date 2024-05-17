@@ -1,1 +1,268 @@
-{"name":"name","nodes":[{"id":"","colorR":1.0,"colorG":0.7347468733787537,"colorB":0.0,"colorA":1.0,"identifiers":[],"JsonConnectionIds":[]},{"id":"","colorR":1.0,"colorG":0.7347468733787537,"colorB":0.0,"colorA":1.0,"identifiers":[],"JsonConnectionIds":[]},{"id":"","colorR":1.0,"colorG":0.7347468733787537,"colorB":0.0,"colorA":1.0,"identifiers":[],"JsonConnectionIds":[]},{"id":"","colorR":1.0,"colorG":0.7347468733787537,"colorB":0.0,"colorA":1.0,"identifiers":[],"JsonConnectionIds":[]},{"id":"","colorR":1.0,"colorG":0.7347468733787537,"colorB":0.0,"colorA":1.0,"identifiers":[],"JsonConnectionIds":[]}],"connections":[{"id":"","identifiers":[],"inputNodeId":"","outputNodeId":"","colorR":255.0,"colorG":0.0,"colorB":0.0,"colorA":0.0},{"id":"","identifiers":[],"inputNodeId":"","outputNodeId":"","colorR":255.0,"colorG":0.0,"colorB":0.0,"colorA":0.0},{"id":"","identifiers":[],"inputNodeId":"","outputNodeId":"","colorR":255.0,"colorG":0.0,"colorB":0.0,"colorA":0.0},{"id":"","identifiers":[],"inputNodeId":"","outputNodeId":"","colorR":255.0,"colorG":0.0,"colorB":0.0,"colorA":0.0}]}
+{
+    "name": "name",
+    "nodes": [
+        {
+            "id": "301807",
+            "colorR": 1.0,
+            "colorG": 0.0,
+            "colorB": 0.0,
+            "colorA": 1.0,
+            "identifiers": [],
+            "JsonConnectionIds": []
+        },
+        {
+            "id": "81517",
+            "colorR": 1.0,
+            "colorG": 0.0,
+            "colorB": 0.0,
+            "colorA": 1.0,
+            "identifiers": [],
+            "JsonConnectionIds": []
+        },
+        {
+            "id": "358949",
+            "colorR": 1.0,
+            "colorG": 0.0,
+            "colorB": 0.0,
+            "colorA": 1.0,
+            "identifiers": [],
+            "JsonConnectionIds": []
+        },
+        {
+            "id": "74216",
+            "colorR": 1.0,
+            "colorG": 0.0,
+            "colorB": 0.0,
+            "colorA": 1.0,
+            "identifiers": [],
+            "JsonConnectionIds": []
+        },
+        {
+            "id": "413809",
+            "colorR": 1.0,
+            "colorG": 0.0,
+            "colorB": 0.0,
+            "colorA": 1.0,
+            "identifiers": [
+                "selected"
+            ],
+            "JsonConnectionIds": []
+        },
+        {
+            "id": "370245",
+            "colorR": 1.0,
+            "colorG": 0.0,
+            "colorB": 0.0,
+            "colorA": 1.0,
+            "identifiers": [],
+            "JsonConnectionIds": []
+        },
+        {
+            "id": "324311",
+            "colorR": 1.0,
+            "colorG": 0.0,
+            "colorB": 0.0,
+            "colorA": 1.0,
+            "identifiers": [
+                "selected",
+                "selected",
+                "selected"
+            ],
+            "JsonConnectionIds": []
+        },
+        {
+            "id": "161154",
+            "colorR": 1.0,
+            "colorG": 0.0,
+            "colorB": 0.0,
+            "colorA": 1.0,
+            "identifiers": [],
+            "JsonConnectionIds": []
+        },
+        {
+            "id": "1",
+            "colorR": 1.0,
+            "colorG": 0.7347468733787537,
+            "colorB": 0.0,
+            "colorA": 1.0,
+            "identifiers": [],
+            "JsonConnectionIds": [
+                "ktd",
+                "sytd"
+            ]
+        },
+        {
+            "id": "fad",
+            "colorR": 1.0,
+            "colorG": 0.7347468733787537,
+            "colorB": 0.0,
+            "colorA": 1.0,
+            "identifiers": [],
+            "JsonConnectionIds": [
+                "asdf"
+            ]
+        },
+        {
+            "id": "asd",
+            "colorR": 1.0,
+            "colorG": 0.7347468733787537,
+            "colorB": 0.0,
+            "colorA": 1.0,
+            "identifiers": [],
+            "JsonConnectionIds": [
+                "ktd",
+                "esr"
+            ]
+        },
+        {
+            "id": "ffdd",
+            "colorR": 1.0,
+            "colorG": 0.7347468733787537,
+            "colorB": 0.0,
+            "colorA": 1.0,
+            "identifiers": [
+                "selected",
+                "selected",
+                "selected",
+                "selected"
+            ],
+            "JsonConnectionIds": [
+                "esr",
+                "sytd"
+            ]
+        },
+        {
+            "id": "fd",
+            "colorR": 1.0,
+            "colorG": 0.7347468733787537,
+            "colorB": 0.0,
+            "colorA": 1.0,
+            "identifiers": [],
+            "JsonConnectionIds": [
+                "asdf"
+            ]
+        }
+    ],
+    "connections": [
+        {
+            "id": "",
+            "identifiers": [],
+            "inputNodeId": "ffdd",
+            "outputNodeId": "301807",
+            "colorR": 255.0,
+            "colorG": 0.0,
+            "colorB": 0.0,
+            "colorA": 0.0
+        },
+        {
+            "id": "",
+            "identifiers": [],
+            "inputNodeId": "ffdd",
+            "outputNodeId": "81517",
+            "colorR": 255.0,
+            "colorG": 0.0,
+            "colorB": 0.0,
+            "colorA": 0.0
+        },
+        {
+            "id": "",
+            "identifiers": [],
+            "inputNodeId": "324311",
+            "outputNodeId": "358949",
+            "colorR": 255.0,
+            "colorG": 0.0,
+            "colorB": 0.0,
+            "colorA": 0.0
+        },
+        {
+            "id": "",
+            "identifiers": [],
+            "inputNodeId": "413809",
+            "outputNodeId": "74216",
+            "colorR": 255.0,
+            "colorG": 0.0,
+            "colorB": 0.0,
+            "colorA": 0.0
+        },
+        {
+            "id": "",
+            "identifiers": [],
+            "inputNodeId": "324311",
+            "outputNodeId": "413809",
+            "colorR": 255.0,
+            "colorG": 0.0,
+            "colorB": 0.0,
+            "colorA": 0.0
+        },
+        {
+            "id": "",
+            "identifiers": [],
+            "inputNodeId": "324311",
+            "outputNodeId": "370245",
+            "colorR": 255.0,
+            "colorG": 0.0,
+            "colorB": 0.0,
+            "colorA": 0.0
+        },
+        {
+            "id": "",
+            "identifiers": [],
+            "inputNodeId": "ffdd",
+            "outputNodeId": "324311",
+            "colorR": 255.0,
+            "colorG": 0.0,
+            "colorB": 0.0,
+            "colorA": 0.0
+        },
+        {
+            "id": "",
+            "identifiers": [],
+            "inputNodeId": "ffdd",
+            "outputNodeId": "161154",
+            "colorR": 255.0,
+            "colorG": 0.0,
+            "colorB": 0.0,
+            "colorA": 0.0
+        },
+        {
+            "id": "asdf",
+            "identifiers": [],
+            "inputNodeId": "fd",
+            "outputNodeId": "fad",
+            "colorR": 255.0,
+            "colorG": 0.0,
+            "colorB": 0.0,
+            "colorA": 0.0
+        },
+        {
+            "id": "esr",
+            "identifiers": [],
+            "inputNodeId": "ffdd",
+            "outputNodeId": "asd",
+            "colorR": 255.0,
+            "colorG": 0.0,
+            "colorB": 0.0,
+            "colorA": 0.0
+        },
+        {
+            "id": "sytd",
+            "identifiers": [],
+            "inputNodeId": "1",
+            "outputNodeId": "ffdd",
+            "colorR": 255.0,
+            "colorG": 0.0,
+            "colorB": 0.0,
+            "colorA": 0.0
+        },
+        {
+            "id": "ktd",
+            "identifiers": [],
+            "inputNodeId": "1",
+            "outputNodeId": "asd",
+            "colorR": 255.0,
+            "colorG": 0.0,
+            "colorB": 0.0,
+            "colorA": 0.0
+        }
+    ]
+}

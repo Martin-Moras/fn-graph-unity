@@ -6,6 +6,12 @@ using UnityEngine;
 public class Connection : MonoBehaviour
 {
     public string id { get; private set; }
+    public void connectionConstructor(string id, List<string> identifiers, Node outputNode, Node inputNode){
+        this.id = id;
+        this.identifiers = identifiers;
+        this.inputNode = inputNode;
+        this.outputNode = outputNode;
+    }
     //selected
     public List<string> identifiers;
 	[SerializeField] public Node inputNode;
