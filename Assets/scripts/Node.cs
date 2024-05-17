@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Data.Common;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Node : MonoBehaviour
@@ -12,8 +13,33 @@ public class Node : MonoBehaviour
         this.connections = connections;
 
     }
+    #region Identifier
     //selected
-    public List<string> identifiers;
+    private List<string> identifiers;
+    public void AddIdentifier(string identifier)
+    {
+        identifiers.Add(identifier);
+        manageSprite();
+    }
+    public void AddRangeIdentifier(string[] identifier)
+    {
+        identifiers.AddRange(identifier);
+        manageSprite();
+    }
+
+    public void RemoveIdentifier(string identifier)
+    {
+        if (identifiers.Remove(identifier))
+        {
+            manageSprite();
+        }
+    }
+    public List<string> GetIdentifiers(){
+        return identifiers;
+    }
+    #endregion
+
+
     public List<Connection> connections;
     void Awake(){
         if(id == "" || id == null) 
@@ -28,6 +54,11 @@ public class Node : MonoBehaviour
             //connection.outputNode.
         }
     } 
+    public void manageSprite(){
+        if (identifiers.Contains("selected")){
+            GetComponent<SpriteRenderer>().color = Color.white;
+        }
+    }
     // Update is called once per frame
     void Update()
     {

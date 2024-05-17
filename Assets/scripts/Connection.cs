@@ -8,13 +8,35 @@ public class Connection : MonoBehaviour
     public string id { get; private set; }
     public void connectionConstructor(string id, List<string> identifiers, Node outputNode, Node inputNode){
         this.id = id;
+        //child
         this.identifiers = identifiers;
         this.inputNode = inputNode;
         this.outputNode = outputNode;
     }
+    #region Identifier
     //selected
-    public List<string> identifiers;
-	[SerializeField] public Node inputNode;
+    public List<string> identifiers {get; private set;}
+    public void AddIdentifier(string identifier)
+    {
+        identifiers.Add(identifier);
+        manageSprite();
+    }
+    public void AddRangeIdentifier(string[] identifier)
+    {
+        identifiers.AddRange(identifier);
+        manageSprite();
+    }
+
+    public void RemoveIdentifier(string identifier)
+    {
+        if (identifiers.Remove(identifier))
+        {
+            manageSprite();
+        }
+    }
+    #endregion
+
+    [SerializeField] public Node inputNode;
     [SerializeField] public Node outputNode;
 	TextMeshPro text;
     Color color;
@@ -57,4 +79,11 @@ public class Connection : MonoBehaviour
 		text.fontSize = 5;
 		text.alignment = TextAlignmentOptions.Midline;
 	}
+
+    public void manageSprite()
+    {
+        if (identifiers.Contains("selected")){
+            GetComponent<SpriteRenderer>().color = Color.white;
+        }
+    }
 }

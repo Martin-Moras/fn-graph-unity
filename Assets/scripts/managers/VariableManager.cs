@@ -11,7 +11,7 @@ public class VariableManager : MonoBehaviour
     public GameObject a;
     #endregion
     public float nodeSelectionRadius;
-
+    public float cameraMoveSpeed;
     #region Singleton
     public static VariableManager Instance { get; private set;}
     void SingletonizeThis()

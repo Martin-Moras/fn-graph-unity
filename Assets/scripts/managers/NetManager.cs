@@ -10,7 +10,7 @@ using UnityEngine.UIElements;
 
 public class NetManager : MonoBehaviour
 {
-    public string id ;
+    public string id;
     #region Singleton
     
     public static NetManager Instance { get; private set;}
@@ -32,17 +32,27 @@ public class NetManager : MonoBehaviour
 
     }
     void newNode(){
-        var newNode =Instantiate(VariableManager.Instance.Node);
+        //foreach (var node in ){}
+        var newNode = Instantiate(VariableManager.Instance.Node);
     }
-    private void NodeSelected(){
-    
+    void NewChildNode(){
         foreach (var node in getAllNodes()){
             //if node is in "nodeSelectionRadius"
             if (((Vector2)node.transform.position - InputManager.Instance.mousePosWorld).magnitude > VariableManager.Instance.nodeSelectionRadius) continue;
 
-            //connectNewNode(node);
-            node.identifiers.Add("selected");
             connectNewNode(node);
+        }
+    }
+    private void NodeSelected(){
+        foreach (var node in getAllNodes()){
+            //if node is in "nodeSelectionRadius"
+            if (((Vector2)node.transform.position - InputManager.Instance.mousePosWorld).magnitude > VariableManager.Instance.nodeSelectionRadius) continue;
+
+            if (node.GetIdentifiers().Contains("selected"))
+            node.AddIdentifier("selected");
+            else
+            node.RemoveIdentifier("selected");
+            //connectNewNode(node).connections.First().identifiers.Add("child");
         }
     }
     private void Load(){
@@ -71,7 +81,6 @@ public class NetManager : MonoBehaviour
             node.connections.AddRange(newConnections.FindAll(x=>x.outputNode == node));
         }
     }
-    
     private void Save(){
         var d = JsonManager.SaveClassAsJson(CreateJsonNet(), Application.dataPath);
         JsonNet CreateJsonNet(){
@@ -92,7 +101,7 @@ public class NetManager : MonoBehaviour
             jsonNode.colorB = nodeSprite.color.b;
             jsonNode.colorA = nodeSprite.color.a; 
 
-            jsonNode.identifiers = node.identifiers.ToArray();
+            jsonNode.identifiers = node.GetIdentifiers().ToArray();
             jsonNode.JsonConnectionIds = node.connections.Select(item => item.id).ToArray();;
 
             net.nodes[i] = jsonNode;
@@ -123,15 +132,20 @@ public class NetManager : MonoBehaviour
         return net;
     }
     }
-    
-    
-    public void connectNewNode(Node node){
+    private void DragNode(){
+
+    }
+    private void DropNode(){
+
+    }
+    public Node connectNewNode(Node node){
         //instantiate a new node
-            var newNode = Instantiate(VariableManager.Instance.Node, node.transform.position, quaternion.identity);
+            var newNodeObj = Instantiate(VariableManager.Instance.Node, node.transform.position, quaternion.identity);
             //collor node red
-            newNode.GetComponent<SpriteRenderer>().color = Color.red;
-            
-            connectNodes(node, newNode.GetComponent<Node>());
+            newNodeObj.GetComponent<SpriteRenderer>().color = Color.red;
+            var newNode = newNodeObj.GetComponent<Node>();
+            connectNodes(node, newNode);
+            return newNode;
     }
     public Connection connectNodes(Node inputNode = null, Node outputNode = null){
             var newConnection = Instantiate(VariableManager.Instance.Connection).GetComponent<Connection>();
@@ -149,11 +163,14 @@ public class NetManager : MonoBehaviour
         InputManager.nodeSelected += NodeSelected;
         InputManager.load += Load;
         InputManager.save += Save;
+        InputManager.newChildNode += NewChildNode;
     }
     void OnDisable(){
         InputManager.newNode -= newNode;
         InputManager.nodeSelected -= NodeSelected;
         InputManager.load -= Load;
         InputManager.save -= Save;
+        InputManager.newChildNode -= NewChildNode;
+
     }
 }

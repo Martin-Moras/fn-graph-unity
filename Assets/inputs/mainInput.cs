@@ -62,6 +62,24 @@ public partial class @MainInput: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""NewChildNode"",
+                    ""type"": ""Button"",
+                    ""id"": ""eb9fa6c8-508f-4d63-9442-3c2542a00176"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""MoveCamera"",
+                    ""type"": ""Value"",
+                    ""id"": ""4d556fe7-3e16-4ee1-b1fd-76a6d9ac0cf6"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
                 }
             ],
             ""bindings"": [
@@ -119,6 +137,94 @@ public partial class @MainInput: IInputActionCollection2, IDisposable
                     ""action"": ""Save"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""Button With One Modifier"",
+                    ""id"": ""3261362f-1385-4b4c-9d27-4c7cdfc47946"",
+                    ""path"": ""ButtonWithOneModifier"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""NewChildNode"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""Modifier"",
+                    ""id"": ""bf90c115-f6eb-40c1-884d-1d8c0c585dc3"",
+                    ""path"": ""<Keyboard>/ctrl"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Pc"",
+                    ""action"": ""NewChildNode"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""Button"",
+                    ""id"": ""ca5a5d39-aa7d-4e91-b1b2-381765186822"",
+                    ""path"": ""<Keyboard>/e"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Pc"",
+                    ""action"": ""NewChildNode"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""2D Vector"",
+                    ""id"": ""c6454f71-9a69-47bd-a751-844f0152b8c2"",
+                    ""path"": ""2DVector"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""MoveCamera"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""up"",
+                    ""id"": ""5b301848-e65f-4334-b9a1-d08fa0ccc48b"",
+                    ""path"": ""<Keyboard>/upArrow"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Pc"",
+                    ""action"": ""MoveCamera"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""down"",
+                    ""id"": ""0cb2ec46-8ea8-45a6-9199-162eefd357ac"",
+                    ""path"": ""<Keyboard>/downArrow"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Pc"",
+                    ""action"": ""MoveCamera"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""left"",
+                    ""id"": ""f1237084-14e6-4544-8c12-9b8a3cf2bad1"",
+                    ""path"": ""<Keyboard>/leftArrow"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Pc"",
+                    ""action"": ""MoveCamera"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""right"",
+                    ""id"": ""1f9141ec-3590-47fd-8987-6d3e6d908fe1"",
+                    ""path"": ""<Keyboard>/rightArrow"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Pc"",
+                    ""action"": ""MoveCamera"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
                 }
             ]
         }
@@ -148,6 +254,8 @@ public partial class @MainInput: IInputActionCollection2, IDisposable
         m_mainScene_Select = m_mainScene.FindAction("Select", throwIfNotFound: true);
         m_mainScene_Load = m_mainScene.FindAction("Load", throwIfNotFound: true);
         m_mainScene_Save = m_mainScene.FindAction("Save", throwIfNotFound: true);
+        m_mainScene_NewChildNode = m_mainScene.FindAction("NewChildNode", throwIfNotFound: true);
+        m_mainScene_MoveCamera = m_mainScene.FindAction("MoveCamera", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -213,6 +321,8 @@ public partial class @MainInput: IInputActionCollection2, IDisposable
     private readonly InputAction m_mainScene_Select;
     private readonly InputAction m_mainScene_Load;
     private readonly InputAction m_mainScene_Save;
+    private readonly InputAction m_mainScene_NewChildNode;
+    private readonly InputAction m_mainScene_MoveCamera;
     public struct MainSceneActions
     {
         private @MainInput m_Wrapper;
@@ -221,6 +331,8 @@ public partial class @MainInput: IInputActionCollection2, IDisposable
         public InputAction @Select => m_Wrapper.m_mainScene_Select;
         public InputAction @Load => m_Wrapper.m_mainScene_Load;
         public InputAction @Save => m_Wrapper.m_mainScene_Save;
+        public InputAction @NewChildNode => m_Wrapper.m_mainScene_NewChildNode;
+        public InputAction @MoveCamera => m_Wrapper.m_mainScene_MoveCamera;
         public InputActionMap Get() { return m_Wrapper.m_mainScene; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -242,6 +354,12 @@ public partial class @MainInput: IInputActionCollection2, IDisposable
             @Save.started += instance.OnSave;
             @Save.performed += instance.OnSave;
             @Save.canceled += instance.OnSave;
+            @NewChildNode.started += instance.OnNewChildNode;
+            @NewChildNode.performed += instance.OnNewChildNode;
+            @NewChildNode.canceled += instance.OnNewChildNode;
+            @MoveCamera.started += instance.OnMoveCamera;
+            @MoveCamera.performed += instance.OnMoveCamera;
+            @MoveCamera.canceled += instance.OnMoveCamera;
         }
 
         private void UnregisterCallbacks(IMainSceneActions instance)
@@ -258,6 +376,12 @@ public partial class @MainInput: IInputActionCollection2, IDisposable
             @Save.started -= instance.OnSave;
             @Save.performed -= instance.OnSave;
             @Save.canceled -= instance.OnSave;
+            @NewChildNode.started -= instance.OnNewChildNode;
+            @NewChildNode.performed -= instance.OnNewChildNode;
+            @NewChildNode.canceled -= instance.OnNewChildNode;
+            @MoveCamera.started -= instance.OnMoveCamera;
+            @MoveCamera.performed -= instance.OnMoveCamera;
+            @MoveCamera.canceled -= instance.OnMoveCamera;
         }
 
         public void RemoveCallbacks(IMainSceneActions instance)
@@ -290,5 +414,7 @@ public partial class @MainInput: IInputActionCollection2, IDisposable
         void OnSelect(InputAction.CallbackContext context);
         void OnLoad(InputAction.CallbackContext context);
         void OnSave(InputAction.CallbackContext context);
+        void OnNewChildNode(InputAction.CallbackContext context);
+        void OnMoveCamera(InputAction.CallbackContext context);
     }
 }
