@@ -1,41 +1,19 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using TMPro;
 using UnityEngine;
 
 public class Connection : MonoBehaviour
 {
-    public string id { get; private set; }
-    public void connectionConstructor(string id, List<string> identifiers, Node outputNode, Node inputNode){
-        this.id = id;
-        //child
-        this.identifiers = identifiers;
+    public string connectionId { get; private set; }
+    public string connectionName;
+    public void connectionConstructor(string id, string name, Node inputNode, Node outputNode){
+        this.connectionId = id;
+        this.connectionName = name;
         this.inputNode = inputNode;
         this.outputNode = outputNode;
     }
-    #region Identifier
-    //selected
-    public List<string> identifiers {get; private set;}
-    public void AddIdentifier(string identifier)
-    {
-        identifiers.Add(identifier);
-        manageSprite();
-    }
-    public void AddRangeIdentifier(string[] identifier)
-    {
-        identifiers.AddRange(identifier);
-        manageSprite();
-    }
-
-    public void RemoveIdentifier(string identifier)
-    {
-        if (identifiers.Remove(identifier))
-        {
-            manageSprite();
-        }
-    }
-    #endregion
-
     [SerializeField] public Node inputNode;
     [SerializeField] public Node outputNode;
 	TextMeshPro text;
@@ -44,22 +22,24 @@ public class Connection : MonoBehaviour
     LineRenderer connectionRenderer;
 
 
+    void Awake(){
+        if(connectionId == "" || connectionId == null) 
+        connectionId = UnityEngine.Random.Range(0, 500000).ToString();
+    }
     void Start()
     {
         initializeVariables();
     }
-
-    // Update is called once per frame
     void Update()
     {
         manageJoint();
         updatePos();
     }
-    public void connectNodes(Node inputNode = null, Node outputNode = null){
-        this.inputNode = inputNode;
-        this.outputNode = outputNode;
+    public void DeleteConnection(){
+        if (inputNode != null) inputNode.connections.Remove(this);
+        if (outputNode != null)outputNode.connections.Remove(this);
+        Destroy(gameObject);
     }
-   
     private void updatePos(){
         Vector3[] positions = { joint.transform.position, joint.connectedBody.position };
         connectionRenderer.SetPositions(positions);
@@ -82,8 +62,10 @@ public class Connection : MonoBehaviour
 
     public void manageSprite()
     {
-        if (identifiers.Contains("selected")){
-            GetComponent<SpriteRenderer>().color = Color.white;
-        }
+        /*foreach (Connection connection in connections){
+            if (connection.id == "selected"){
+                GetComponent<SpriteRenderer>().color = Color.white;
+            }
+        }*/
     }
 }

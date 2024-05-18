@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Unity.Mathematics;
+using Unity.VisualScripting;
 using UnityEditorInternal;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -40,19 +41,31 @@ public class NetManager : MonoBehaviour
             //if node is in "nodeSelectionRadius"
             if (((Vector2)node.transform.position - InputManager.Instance.mousePosWorld).magnitude > VariableManager.Instance.nodeSelectionRadius) continue;
 
-            connectNewNode(node);
+            connectNewNode(node, out Node newNode, out Connection newConnection);
+            newNode.nodeName = "child";
+            newConnection.connectionName = "identifier";
         }
     }
     private void NodeSelected(){
         foreach (var node in getAllNodes()){
             //if node is in "nodeSelectionRadius"
             if (((Vector2)node.transform.position - InputManager.Instance.mousePosWorld).magnitude > VariableManager.Instance.nodeSelectionRadius) continue;
+            
+            //if node has an identifier called "selected" remove it else add it
+            var selectedIdentifierConnections = GetIdentifierConnections(node, new string[]{"selected"});
 
-            if (node.GetIdentifiers().Contains("selected"))
-            node.AddIdentifier("selected");
-            else
-            node.RemoveIdentifier("selected");
-            //connectNewNode(node).connections.First().identifiers.Add("child");
+            if (selectedIdentifierConnections.Count == 0){
+                connectNewNode(node, out Node newNode, out Connection newConnection);
+                newNode.nodeName = "selected";
+                newConnection.connectionName = "identifier";
+            }
+            else {
+                foreach (var selectedIdentifierConnection in selectedIdentifierConnections)
+                {
+                    selectedIdentifierConnection.outputNode.DeleteNode();
+                    selectedIdentifierConnection.DeleteConnection();
+                }
+            }
         }
     }
     private void Load(){
@@ -62,7 +75,7 @@ public class NetManager : MonoBehaviour
         foreach (var node in clas.nodes){
             var newNodeObj = Instantiate(VariableManager.Instance.Node);
             var newNode = newNodeObj.GetComponent<Node>();
-            newNode.NodeConstructor(node.id, node.identifiers.ToList(), new List<Connection>());
+            newNode.NodeConstructor(node.id, node.name, new List<Connection>());
             newNodes.Add(newNode);
         }
         //Instantiate connections
@@ -70,9 +83,11 @@ public class NetManager : MonoBehaviour
         foreach (var connection in clas.connections){
             var newconnectionObj = Instantiate(VariableManager.Instance.Connection);
             var newConnection = newconnectionObj.GetComponent<Connection>();
-            var asd = newNodes.Find(x=>x.id == connection.inputNodeId);
-            var das = newNodes.Find(x=>x.id == connection.outputNodeId);
-            newConnection.connectionConstructor(connection.id, connection.identifiers.ToList(), asd, das);
+            
+            var inputNode = newNodes.Find(x=>x.nodeId == connection.inputNodeId);
+            var outputNode = newNodes.Find(x=>x.nodeId == connection.outputNodeId);
+            
+            newConnection.connectionConstructor(connection.id, connection.name, inputNode, outputNode);
             newConnections.Add(newConnection);
         }
         //connection to "node.connections)
@@ -83,54 +98,52 @@ public class NetManager : MonoBehaviour
     }
     private void Save(){
         var d = JsonManager.SaveClassAsJson(CreateJsonNet(), Application.dataPath);
+        
         JsonNet CreateJsonNet(){
-        var net = new JsonNet();
-        net.name = "name";
-        //Set nodes
-        var allNodes = getAllNodes();
-        net.nodes = new JsonNode[allNodes.Length];
-        for (int i = 0; i < net.nodes.Length; i++)
-        {
-            var node = allNodes[i];
-            var jsonNode = new JsonNode();
-            jsonNode.id = node.id;
-            //Collor
-            var nodeSprite = node.GetComponent<SpriteRenderer>();
-            jsonNode.colorR = nodeSprite.color.r;
-            jsonNode.colorG = nodeSprite.color.g;
-            jsonNode.colorB = nodeSprite.color.b;
-            jsonNode.colorA = nodeSprite.color.a; 
-
-            jsonNode.identifiers = node.GetIdentifiers().ToArray();
-            jsonNode.JsonConnectionIds = node.connections.Select(item => item.id).ToArray();;
-
-            net.nodes[i] = jsonNode;
+            var net = new JsonNet();
+            net.name = "name";
+            //Set nodes
+            var allNodes = getAllNodes();
+            net.nodes = new JsonNode[allNodes.Length];
+            for (int i = 0; i < net.nodes.Length; i++)
+            {
+                var node = allNodes[i];
+                var nodeSprite = node.GetComponent<SpriteRenderer>();
+                var jsonNode = new JsonNode
+                {
+                    id = node.nodeId,
+                    name = node.nodeName,
+                    colorR = nodeSprite.color.r,
+                    colorG = nodeSprite.color.g,
+                    colorB = nodeSprite.color.b,
+                    colorA = nodeSprite.color.a, 
+                    JsonConnectionIds = node.connections.Select(item => item.connectionId).ToArray(),
+                };
+                net.nodes[i] = jsonNode;
+            }
+            //Set connections
+            var allConnections = getAllConnections();
+            net.connections = new JsonConnection[allConnections.Length];
+            for (int i = 0; i < net.connections.Length; i++)
+            {
+                var connection = allConnections[i];
+                var connectionSprite = connection.GetComponent<LineRenderer>();
+                var jsonConnection = new JsonConnection
+                {
+                    id = connection.connectionId,
+                    name = connection.connectionName,
+                    colorR = 255,
+                    colorG = 0,
+                    colorB = 0,
+                    colorA = 0,
+                    inputNodeId = connection.inputNode.nodeId,
+                    outputNodeId = connection.outputNode.nodeId
+                };
+                //Collor
+                net.connections[i] = jsonConnection;
+            }
+            return net;
         }
-        //Set connections
-        var allConnections = getAllConnections();
-        net.connections = new JsonConnection[allConnections.Length];
-        for (int i = 0; i < net.connections.Length; i++)
-        {
-            var Connection = allConnections[i];
-            var jsonConnection = new JsonConnection();
-            jsonConnection.id = Connection.id;
-            //Collor
-            var connectionSprite = Connection.GetComponent<LineRenderer>();
-            jsonConnection.colorR = 255;
-            jsonConnection.colorG = 0;
-            jsonConnection.colorB = 0;
-            jsonConnection.colorA = 0; 
-        
-
-            jsonConnection.identifiers = Connection.identifiers.ToArray();
-            jsonConnection.inputNodeId = Connection.inputNode.id;
-            jsonConnection.outputNodeId = Connection.outputNode.id;
-
-            net.connections[i] = jsonConnection;
-        }
-        
-        return net;
-    }
     }
     private void DragNode(){
 
@@ -138,19 +151,31 @@ public class NetManager : MonoBehaviour
     private void DropNode(){
 
     }
-    public Node connectNewNode(Node node){
+    public void connectNewNode(Node node, out Node newNode, out Connection newConnection){
         //instantiate a new node
-            var newNodeObj = Instantiate(VariableManager.Instance.Node, node.transform.position, quaternion.identity);
-            //collor node red
-            newNodeObj.GetComponent<SpriteRenderer>().color = Color.red;
-            var newNode = newNodeObj.GetComponent<Node>();
-            connectNodes(node, newNode);
-            return newNode;
+        var newNodeObj = Instantiate(VariableManager.Instance.Node, node.transform.position, quaternion.identity);
+        //collor node red
+        newNode = newNodeObj.GetComponent<Node>();
+        newConnection = connectNodes(node, newNode);
     }
-    public Connection connectNodes(Node inputNode = null, Node outputNode = null){
+    public Connection connectNodes(Node inputNode = null, Node outputNode = null, string connectionName = "", string connectionId = ""){
             var newConnection = Instantiate(VariableManager.Instance.Connection).GetComponent<Connection>();
-            newConnection.connectNodes(inputNode, outputNode);
+            newConnection.connectionConstructor(id, connectionName, inputNode, outputNode);
+            if (inputNode != null) inputNode.connections.Add(newConnection);
+            if (outputNode != null) outputNode.connections.Add(newConnection);
             return newConnection;
+    }
+    public List<Connection> GetIdentifierConnections(Node node, string[] identifiers){
+        var identifierConnections = new List<Connection>();
+        //loop through all identifiers
+        foreach (var identifier in identifiers){
+            //loop through all identifier connections
+            foreach (var identifierConnection in node.connections.FindAll(x=>x.connectionName=="identifier")) {
+                    //if the output node of the identifier connection matches the identifier, add it to "identifierConnection" 
+                    if (identifierConnection.outputNode.nodeName==identifier) identifierConnections.Add(identifierConnection);
+                }
+        }
+        return identifierConnections;
     }
     public Node[] getAllNodes(){
         return GameObject.FindObjectsOfType<Node>();

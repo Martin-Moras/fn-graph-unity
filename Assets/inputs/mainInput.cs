@@ -96,17 +96,6 @@ public partial class @MainInput: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""058525d6-b76e-4a90-b69b-fdac615c3eb3"",
-                    ""path"": ""<Keyboard>/r"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": ""Pc"",
-                    ""action"": ""NewNode"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
                     ""id"": ""b3444824-b7f6-44cb-93d5-0807a985984c"",
                     ""path"": ""<Mouse>/leftButton"",
                     ""interactions"": """",

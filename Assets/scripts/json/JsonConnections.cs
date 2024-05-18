@@ -3,7 +3,7 @@ using System;
 [Serializable]
 public class JsonConnection{
     public string id;
-    public string[] identifiers;
+    public string name;
     public string inputNodeId;
     public string outputNodeId;
 
