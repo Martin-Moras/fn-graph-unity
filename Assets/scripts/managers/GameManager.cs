@@ -2,10 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GameManager : MonoBehaviour
+public class AppearanceManager : MonoBehaviour
 {
     #region Singleton
-    public static GameManager Instance { get; private set;}
+    public static AppearanceManager Instance { get; private set;}
     void SingletonizeThis()
     {
         if (Instance != null && Instance != this) Destroy(this);

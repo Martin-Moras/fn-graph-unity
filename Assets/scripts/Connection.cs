@@ -11,13 +11,12 @@ public class Connection : MonoBehaviour
     public void connectionConstructor(string id, string name, Node inputNode, Node outputNode){
         this.connectionId = id;
         this.connectionName = name;
-        this.inputNode = inputNode;
-        this.outputNode = outputNode;
+        this.inNode = inputNode;
+        this.outNode = outputNode;
     }
-    [SerializeField] public Node inputNode;
-    [SerializeField] public Node outputNode;
+    [SerializeField] public Node inNode;
+    [SerializeField] public Node outNode;
 	TextMeshPro text;
-    Color color;
 	SpringJoint2D joint;
     LineRenderer connectionRenderer;
 
@@ -35,19 +34,14 @@ public class Connection : MonoBehaviour
         manageJoint();
         updatePos();
     }
-    public void DeleteConnection(){
-        if (inputNode != null) inputNode.connections.Remove(this);
-        if (outputNode != null)outputNode.connections.Remove(this);
-        Destroy(gameObject);
-    }
     private void updatePos(){
         Vector3[] positions = { joint.transform.position, joint.connectedBody.position };
         connectionRenderer.SetPositions(positions);
     }
     private void manageJoint(){
         if(joint == null){
-            joint = inputNode.gameObject.AddComponent<SpringJoint2D>();
-            joint.connectedBody = outputNode.gameObject.GetComponent<Rigidbody2D>();
+            joint = inNode.gameObject.AddComponent<SpringJoint2D>();
+            joint.connectedBody = outNode.gameObject.GetComponent<Rigidbody2D>();
             joint.autoConfigureDistance = false;
             joint.distance = 3;
         }
@@ -59,13 +53,4 @@ public class Connection : MonoBehaviour
 		text.fontSize = 5;
 		text.alignment = TextAlignmentOptions.Midline;
 	}
-
-    public void manageSprite()
-    {
-        /*foreach (Connection connection in connections){
-            if (connection.id == "selected"){
-                GetComponent<SpriteRenderer>().color = Color.white;
-            }
-        }*/
-    }
 }

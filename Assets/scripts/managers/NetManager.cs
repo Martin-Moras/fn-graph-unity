@@ -1,20 +1,16 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Unity.Mathematics;
-using Unity.VisualScripting;
-using UnityEditorInternal;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 public class NetManager : MonoBehaviour
 {
     public string id;
+    public List<Connection> identifierConnections;
     #region Singleton
     
     public static NetManager Instance { get; private set;}
+
     void SingletonizeThis()
     {
         if (Instance != null && Instance != this) Destroy(this);
@@ -26,56 +22,66 @@ public class NetManager : MonoBehaviour
     {
         SingletonizeThis();
     }
-
-    // Update is called once per frame
     void Update()
     {
 
     }
-    void newNode(){
-        //foreach (var node in ){}
-        var newNode = Instantiate(VariableManager.Instance.Node);
+    public Node NewNode(string name = ""){
+        var newNode = Instantiate(VariableManager.Instance.Node).GetComponent<Node>();
+        newNode.nodeName = name;
+        return newNode;
     }
-    void NewChildNode(){
-        foreach (var node in getAllNodes()){
+    public void NewChildNode(){
+        foreach (var node in GetAllNodes()){
             //if node is in "nodeSelectionRadius"
             if (((Vector2)node.transform.position - InputManager.Instance.mousePosWorld).magnitude > VariableManager.Instance.nodeSelectionRadius) continue;
 
-            connectNewNode(node, out Node newNode, out Connection newConnection);
+            ConnectNewNode(node, out Node newNode, out Connection newConnection);
             newNode.nodeName = "child";
             newConnection.connectionName = "identifier";
         }
     }
-    private void NodeSelected(){
-        foreach (var node in getAllNodes()){
+    public void NodeSelected(){
+        foreach (var node in GetAllNodes()){
             //if node is in "nodeSelectionRadius"
             if (((Vector2)node.transform.position - InputManager.Instance.mousePosWorld).magnitude > VariableManager.Instance.nodeSelectionRadius) continue;
             
             //if node has an identifier called "selected" remove it else add it
-            var selectedIdentifierConnections = GetIdentifierConnections(node, new string[]{"selected"});
+            var selectedIdentifierConnection = GetIdentifierConnections(new string[]{"selected"}, false).Find(x=>x.inNode==node);
 
-            if (selectedIdentifierConnections.Count == 0){
-                connectNewNode(node, out Node newNode, out Connection newConnection);
-                newNode.nodeName = "selected";
-                newConnection.connectionName = "identifier";
+            if (selectedIdentifierConnection == null){
+				ConnectNodes(node, GetIdentifierConnections(new string[]{"selected"}, true).First().outNode);
             }
             else {
-                foreach (var selectedIdentifierConnection in selectedIdentifierConnections)
-                {
-                    selectedIdentifierConnection.outputNode.DeleteNode();
-                    selectedIdentifierConnection.DeleteConnection();
-                }
+				DeleteConnection(selectedIdentifierConnection);
             }
         }
     }
-    private void Load(){
+    public List<Connection> GetIdentifierConnections(string[] identifiers, bool createIfDoesntExist){
+        var matchingIdentifierConnections = new List<Connection>();
+		//loop through all identifiers
+		foreach (var identifier in identifiers){
+			//get all Identifier connections where "outNode = identifier"
+			var identifierConnection = identifierConnections.FindAll(x=>x.outNode.name == identifier);
+			Connection newIdConnection;
+			if (identifierConnection.Count == 0 && createIfDoesntExist) {
+				newIdConnection = ConnectNodes(NewNode("empty"), NewNode(identifier), "identifier");
+				identifierConnection.Add(newIdConnection);
+				identifierConnections.Add(newIdConnection);
+				//add to global, 
+			} 
+			matchingIdentifierConnections.AddRange(identifierConnection);
+		}
+		return matchingIdentifierConnections;
+    }
+    public void Load(){
         var clas = JsonManager.LoadClassFromJson<JsonNet>(Application.dataPath);
         var newNodes = new List<Node>();
         //Instantiate nodes
         foreach (var node in clas.nodes){
             var newNodeObj = Instantiate(VariableManager.Instance.Node);
             var newNode = newNodeObj.GetComponent<Node>();
-            newNode.NodeConstructor(node.id, node.name, new List<Connection>());
+            newNode.NodeConstructor(node.id, node.name);
             newNodes.Add(newNode);
         }
         //Instantiate connections
@@ -90,20 +96,15 @@ public class NetManager : MonoBehaviour
             newConnection.connectionConstructor(connection.id, connection.name, inputNode, outputNode);
             newConnections.Add(newConnection);
         }
-        //connection to "node.connections)
-        foreach (var node in newNodes){
-            node.connections.AddRange(newConnections.FindAll(x=>x.inputNode == node));
-            node.connections.AddRange(newConnections.FindAll(x=>x.outputNode == node));
-        }
     }
-    private void Save(){
+    public void Save(){
         var d = JsonManager.SaveClassAsJson(CreateJsonNet(), Application.dataPath);
         
         JsonNet CreateJsonNet(){
             var net = new JsonNet();
             net.name = "name";
             //Set nodes
-            var allNodes = getAllNodes();
+            var allNodes = GetAllNodes();
             net.nodes = new JsonNode[allNodes.Length];
             for (int i = 0; i < net.nodes.Length; i++)
             {
@@ -117,7 +118,6 @@ public class NetManager : MonoBehaviour
                     colorG = nodeSprite.color.g,
                     colorB = nodeSprite.color.b,
                     colorA = nodeSprite.color.a, 
-                    JsonConnectionIds = node.connections.Select(item => item.connectionId).ToArray(),
                 };
                 net.nodes[i] = jsonNode;
             }
@@ -136,8 +136,8 @@ public class NetManager : MonoBehaviour
                     colorG = 0,
                     colorB = 0,
                     colorA = 0,
-                    inputNodeId = connection.inputNode.nodeId,
-                    outputNodeId = connection.outputNode.nodeId
+                    inputNodeId = connection.inNode.nodeId,
+                    outputNodeId = connection.outNode.nodeId
                 };
                 //Collor
                 net.connections[i] = jsonConnection;
@@ -151,51 +151,39 @@ public class NetManager : MonoBehaviour
     private void DropNode(){
 
     }
-    public void connectNewNode(Node node, out Node newNode, out Connection newConnection){
+    public void ConnectNewNode(Node node, out Node newNode, out Connection newConnection){
         //instantiate a new node
         var newNodeObj = Instantiate(VariableManager.Instance.Node, node.transform.position, quaternion.identity);
         //collor node red
         newNode = newNodeObj.GetComponent<Node>();
-        newConnection = connectNodes(node, newNode);
+        newConnection = ConnectNodes(node, newNode);
     }
-    public Connection connectNodes(Node inputNode = null, Node outputNode = null, string connectionName = "", string connectionId = ""){
+    public Connection ConnectNodes(Node inputNode = null, Node outputNode = null, string connectionName = "", string connectionId = ""){
             var newConnection = Instantiate(VariableManager.Instance.Connection).GetComponent<Connection>();
             newConnection.connectionConstructor(id, connectionName, inputNode, outputNode);
-            if (inputNode != null) inputNode.connections.Add(newConnection);
-            if (outputNode != null) outputNode.connections.Add(newConnection);
             return newConnection;
     }
-    public List<Connection> GetIdentifierConnections(Node node, string[] identifiers){
-        var identifierConnections = new List<Connection>();
-        //loop through all identifiers
-        foreach (var identifier in identifiers){
-            //loop through all identifier connections
-            foreach (var identifierConnection in node.connections.FindAll(x=>x.connectionName=="identifier")) {
-                    //if the output node of the identifier connection matches the identifier, add it to "identifierConnection" 
-                    if (identifierConnection.outputNode.nodeName==identifier) identifierConnections.Add(identifierConnection);
-                }
-        }
-        return identifierConnections;
+    public void DeleteConnection(Connection connection){
+        Destroy(connection.gameObject);
     }
-    public Node[] getAllNodes(){
+    public void DeleteNode(Node node, bool inConnection, bool outConnection){
+        foreach (var connection in getAllConnections())
+        {
+            if (connection.inNode == node){
+                if (inConnection) Destroy(connection.gameObject);
+                else connection.inNode = NewNode("empty");
+            }
+            if (connection.outNode == node){
+                if (outConnection) Destroy(connection.gameObject);
+                else connection.outNode = NewNode("empty");
+            }
+        }
+        Destroy(node.gameObject);
+    }
+    public Node[] GetAllNodes(){
         return GameObject.FindObjectsOfType<Node>();
     }
     public Connection[] getAllConnections(){
         return GameObject.FindObjectsOfType<Connection>();
-    }
-    void OnEnable(){
-        InputManager.newNode += newNode;
-        InputManager.nodeSelected += NodeSelected;
-        InputManager.load += Load;
-        InputManager.save += Save;
-        InputManager.newChildNode += NewChildNode;
-    }
-    void OnDisable(){
-        InputManager.newNode -= newNode;
-        InputManager.nodeSelected -= NodeSelected;
-        InputManager.load -= Load;
-        InputManager.save -= Save;
-        InputManager.newChildNode -= NewChildNode;
-
     }
 }

@@ -13,12 +13,12 @@ public class InputManager : MonoBehaviour
     public Vector2 mousePosScreen;
     public Vector2 moveCamera;
     #region events
-    public delegate void EventHandler();
+    public delegate void EventHandler();/*
     public static event EventHandler newNode;
     public static event EventHandler nodeSelected;
     public static event EventHandler load;
     public static event EventHandler save;
-    public static event EventHandler newChildNode;
+    public static event EventHandler newChildNode;*/
     #endregion
     #region Singleton
     public static InputManager Instance { get; private set;}
@@ -43,12 +43,11 @@ public class InputManager : MonoBehaviour
         manageInputs();
     }
     private void manageInputs(){
-        if (mainInput.mainScene.NewNode.triggered && newNode != null) newNode();
-        if (mainInput.mainScene.Select.triggered && nodeSelected != null) nodeSelected();
-        if (mainInput.mainScene.NewChildNode.triggered && newChildNode != null) newChildNode();
-        //backup
-        if (mainInput.mainScene.Load.triggered && load != null) load();
-        if (mainInput.mainScene.Save.triggered && save != null) save();
+        if (mainInput.mainScene.NewNode.triggered) NetManager.Instance.NewNode();
+        if (mainInput.mainScene.Select.triggered) NetManager.Instance.NodeSelected();
+        if (mainInput.mainScene.NewChildNode.triggered) NetManager.Instance.NewChildNode();
+        if (mainInput.mainScene.Load.triggered) NetManager.Instance.Load();
+        if (mainInput.mainScene.Save.triggered) NetManager.Instance.Save();
         //Camera
         moveCamera = Vector2.zero;
         moveCamera += mainInput.mainScene.MoveCamera.ReadValue<Vector2>();
