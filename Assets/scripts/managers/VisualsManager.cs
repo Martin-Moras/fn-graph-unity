@@ -22,9 +22,15 @@ public class VisualsManager : MonoBehaviour
         manageSprite();
     }
     public void manageSprite(){
-        foreach (var connection in NetManager.Instance.identifierConnections){
-            if (connection.outNode.nodeName == "selected") connection.inNode.GetComponent<SpriteRenderer>().color = Color.white;
-            else connection.inNode.GetComponent<SpriteRenderer>().color = Color.white;
+        foreach (var node in NetManager.Instance.GetAllNodes()){
+            node.GetComponent<SpriteRenderer>().color = Color.red;
+            
+            foreach (var connection in NetManager.Instance.GetConnections(node))
+            {
+                if (connection.outNode.nodeName == "selected") 
+                node.GetComponent<SpriteRenderer>().color = Color.white;
+                
+            }
         }
     }
 }

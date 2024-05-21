@@ -1,184 +1,140 @@
 {
+    "id": "",
     "name": "name",
     "nodes": [
         {
-            "id": "301807",
+            "id": "284585",
+            "nodeName": "selected",
             "colorR": 1.0,
             "colorG": 0.0,
             "colorB": 0.0,
             "colorA": 1.0,
-            "identifiers": [],
             "JsonConnectionIds": []
         },
         {
-            "id": "81517",
+            "id": "fd",
+            "nodeName": "",
             "colorR": 1.0,
             "colorG": 0.0,
             "colorB": 0.0,
             "colorA": 1.0,
-            "identifiers": [],
             "JsonConnectionIds": []
         },
         {
-            "id": "358949",
+            "id": "ffdd",
+            "nodeName": "",
+            "colorR": 1.0,
+            "colorG": 0.0,
+            "colorB": 0.0,
+            "colorA": 1.0,
+            "JsonConnectionIds": []
+        },
+        {
+            "id": "asd",
+            "nodeName": "",
+            "colorR": 1.0,
+            "colorG": 0.0,
+            "colorB": 0.0,
+            "colorA": 1.0,
+            "JsonConnectionIds": []
+        },
+        {
+            "id": "fad",
+            "nodeName": "",
             "colorR": 1.0,
             "colorG": 1.0,
-            "colorB": 0.0,
+            "colorB": 1.0,
             "colorA": 1.0,
-            "identifiers": [],
-            "JsonConnectionIds": []
-        },
-        {
-            "id": "74216",
-            "colorR": 1.0,
-            "colorG": 0.0,
-            "colorB": 0.0,
-            "colorA": 1.0,
-            "identifiers": [],
-            "JsonConnectionIds": []
-        },
-        {
-            "id": "413809",
-            "colorR": 1.0,
-            "colorG": 0.0,
-            "colorB": 0.0,
-            "colorA": 1.0,
-            "identifiers": [
-                "selected"
-            ],
-            "JsonConnectionIds": []
-        },
-        {
-            "id": "370245",
-            "colorR": 1.0,
-            "colorG": 0.0,
-            "colorB": 0.0,
-            "colorA": 1.0,
-            "identifiers": [],
-            "JsonConnectionIds": []
-        },
-        {
-            "id": "324311",
-            "colorR": 1.0,
-            "colorG": 0.0,
-            "colorB": 0.0,
-            "colorA": 1.0,
-            "identifiers": [
-                "selected",
-                "selected",
-                "selected"
-            ],
-            "JsonConnectionIds": []
-        },
-        {
-            "id": "161154",
-            "colorR": 1.0,
-            "colorG": 0.0,
-            "colorB": 0.0,
-            "colorA": 1.0,
-            "identifiers": [],
             "JsonConnectionIds": []
         },
         {
             "id": "1",
+            "nodeName": "",
             "colorR": 1.0,
-            "colorG": 0.7347468733787537,
+            "colorG": 0.0,
             "colorB": 0.0,
             "colorA": 1.0,
-            "identifiers": [],
-            "JsonConnectionIds": [
-                "ktd",
-                "sytd"
-            ]
+            "JsonConnectionIds": []
         },
         {
-            "id": "fad",
+            "id": "161154",
+            "nodeName": "",
             "colorR": 1.0,
-            "colorG": 0.7347468733787537,
+            "colorG": 0.0,
             "colorB": 0.0,
             "colorA": 1.0,
-            "identifiers": [],
-            "JsonConnectionIds": [
-                "asdf"
-            ]
+            "JsonConnectionIds": []
         },
         {
-            "id": "asd",
+            "id": "324311",
+            "nodeName": "",
             "colorR": 1.0,
-            "colorG": 0.7347468733787537,
-            "colorB": 0.0,
+            "colorG": 1.0,
+            "colorB": 1.0,
             "colorA": 1.0,
-            "identifiers": [],
-            "JsonConnectionIds": [
-                "ktd",
-                "esr"
-            ]
+            "JsonConnectionIds": []
         },
         {
-            "id": "ffdd",
+            "id": "370245",
+            "nodeName": "",
             "colorR": 1.0,
-            "colorG": 0.7347468733787537,
+            "colorG": 0.0,
             "colorB": 0.0,
             "colorA": 1.0,
-            "identifiers": [
-                "selected",
-                "selected",
-                "selected",
-                "selected"
-            ],
-            "JsonConnectionIds": [
-                "esr",
-                "sytd"
-            ]
+            "JsonConnectionIds": []
         },
         {
-            "id": "fd",
+            "id": "413809",
+            "nodeName": "",
             "colorR": 1.0,
-            "colorG": 0.7347468733787537,
+            "colorG": 1.0,
+            "colorB": 1.0,
+            "colorA": 1.0,
+            "JsonConnectionIds": []
+        },
+        {
+            "id": "74216",
+            "nodeName": "",
+            "colorR": 1.0,
+            "colorG": 0.0,
             "colorB": 0.0,
             "colorA": 1.0,
-            "identifiers": [],
-            "JsonConnectionIds": [
-                "asdf"
-            ]
+            "JsonConnectionIds": []
+        },
+        {
+            "id": "358949",
+            "nodeName": "",
+            "colorR": 1.0,
+            "colorG": 1.0,
+            "colorB": 1.0,
+            "colorA": 1.0,
+            "JsonConnectionIds": []
+        },
+        {
+            "id": "81517",
+            "nodeName": "",
+            "colorR": 1.0,
+            "colorG": 0.0,
+            "colorB": 0.0,
+            "colorA": 1.0,
+            "JsonConnectionIds": []
+        },
+        {
+            "id": "301807",
+            "nodeName": "",
+            "colorR": 1.0,
+            "colorG": 0.0,
+            "colorB": 0.0,
+            "colorA": 1.0,
+            "JsonConnectionIds": []
         }
     ],
     "connections": [
         {
             "id": "",
-            "identifiers": [],
-            "inputNodeId": "ffdd",
-            "outputNodeId": "301807",
-            "colorR": 255.0,
-            "colorG": 0.0,
-            "colorB": 0.0,
-            "colorA": 0.0
-        },
-        {
-            "id": "",
-            "identifiers": [],
-            "inputNodeId": "ffdd",
-            "outputNodeId": "81517",
-            "colorR": 255.0,
-            "colorG": 0.0,
-            "colorB": 0.0,
-            "colorA": 0.0
-        },
-        {
-            "id": "",
-            "identifiers": [],
-            "inputNodeId": "324311",
-            "outputNodeId": "358949",
-            "colorR": 255.0,
-            "colorG": 0.0,
-            "colorB": 0.0,
-            "colorA": 0.0
-        },
-        {
-            "id": "",
-            "identifiers": [],
+            "connectionName": "identifier",
             "inputNodeId": "413809",
-            "outputNodeId": "74216",
+            "outputNodeId": "284585",
             "colorR": 255.0,
             "colorG": 0.0,
             "colorB": 0.0,
@@ -186,9 +142,19 @@
         },
         {
             "id": "",
-            "identifiers": [],
+            "connectionName": "identifier",
+            "inputNodeId": "358949",
+            "outputNodeId": "284585",
+            "colorR": 255.0,
+            "colorG": 0.0,
+            "colorB": 0.0,
+            "colorA": 0.0
+        },
+        {
+            "id": "",
+            "connectionName": "identifier",
             "inputNodeId": "324311",
-            "outputNodeId": "413809",
+            "outputNodeId": "284585",
             "colorR": 255.0,
             "colorG": 0.0,
             "colorB": 0.0,
@@ -196,9 +162,49 @@
         },
         {
             "id": "",
-            "identifiers": [],
-            "inputNodeId": "324311",
-            "outputNodeId": "370245",
+            "connectionName": "identifier",
+            "inputNodeId": "fad",
+            "outputNodeId": "284585",
+            "colorR": 255.0,
+            "colorG": 0.0,
+            "colorB": 0.0,
+            "colorA": 0.0
+        },
+        {
+            "id": "ktd",
+            "connectionName": "",
+            "inputNodeId": "1",
+            "outputNodeId": "asd",
+            "colorR": 255.0,
+            "colorG": 0.0,
+            "colorB": 0.0,
+            "colorA": 0.0
+        },
+        {
+            "id": "sytd",
+            "connectionName": "",
+            "inputNodeId": "1",
+            "outputNodeId": "ffdd",
+            "colorR": 255.0,
+            "colorG": 0.0,
+            "colorB": 0.0,
+            "colorA": 0.0
+        },
+        {
+            "id": "esr",
+            "connectionName": "",
+            "inputNodeId": "ffdd",
+            "outputNodeId": "asd",
+            "colorR": 255.0,
+            "colorG": 0.0,
+            "colorB": 0.0,
+            "colorA": 0.0
+        },
+        {
+            "id": "asdf",
+            "connectionName": "",
+            "inputNodeId": "fd",
+            "outputNodeId": "fad",
             "colorR": 255.0,
             "colorG": 0.0,
             "colorB": 0.0,
@@ -206,7 +212,17 @@
         },
         {
             "id": "",
-            "identifiers": [],
+            "connectionName": "",
+            "inputNodeId": "ffdd",
+            "outputNodeId": "161154",
+            "colorR": 255.0,
+            "colorG": 0.0,
+            "colorB": 0.0,
+            "colorA": 0.0
+        },
+        {
+            "id": "",
+            "connectionName": "",
             "inputNodeId": "ffdd",
             "outputNodeId": "324311",
             "colorR": 255.0,
@@ -216,49 +232,59 @@
         },
         {
             "id": "",
-            "identifiers": [],
+            "connectionName": "",
+            "inputNodeId": "324311",
+            "outputNodeId": "370245",
+            "colorR": 255.0,
+            "colorG": 0.0,
+            "colorB": 0.0,
+            "colorA": 0.0
+        },
+        {
+            "id": "",
+            "connectionName": "",
+            "inputNodeId": "324311",
+            "outputNodeId": "413809",
+            "colorR": 255.0,
+            "colorG": 0.0,
+            "colorB": 0.0,
+            "colorA": 0.0
+        },
+        {
+            "id": "",
+            "connectionName": "",
+            "inputNodeId": "413809",
+            "outputNodeId": "74216",
+            "colorR": 255.0,
+            "colorG": 0.0,
+            "colorB": 0.0,
+            "colorA": 0.0
+        },
+        {
+            "id": "",
+            "connectionName": "",
+            "inputNodeId": "324311",
+            "outputNodeId": "358949",
+            "colorR": 255.0,
+            "colorG": 0.0,
+            "colorB": 0.0,
+            "colorA": 0.0
+        },
+        {
+            "id": "",
+            "connectionName": "",
             "inputNodeId": "ffdd",
-            "outputNodeId": "161154",
+            "outputNodeId": "81517",
             "colorR": 255.0,
             "colorG": 0.0,
             "colorB": 0.0,
             "colorA": 0.0
         },
         {
-            "id": "asdf",
-            "identifiers": [],
-            "inputNodeId": "fd",
-            "outputNodeId": "fad",
-            "colorR": 255.0,
-            "colorG": 0.0,
-            "colorB": 0.0,
-            "colorA": 0.0
-        },
-        {
-            "id": "esr",
-            "identifiers": [],
+            "id": "",
+            "connectionName": "",
             "inputNodeId": "ffdd",
-            "outputNodeId": "asd",
-            "colorR": 255.0,
-            "colorG": 0.0,
-            "colorB": 0.0,
-            "colorA": 0.0
-        },
-        {
-            "id": "sytd",
-            "identifiers": [],
-            "inputNodeId": "1",
-            "outputNodeId": "ffdd",
-            "colorR": 255.0,
-            "colorG": 0.0,
-            "colorB": 0.0,
-            "colorA": 0.0
-        },
-        {
-            "id": "ktd",
-            "identifiers": [],
-            "inputNodeId": "1",
-            "outputNodeId": "asd",
+            "outputNodeId": "301807",
             "colorR": 255.0,
             "colorG": 0.0,
             "colorB": 0.0,
