@@ -4,10 +4,4 @@ using System;
 public class JsonNode{
     public string id;
     public string nodeName;
-    public float colorR;
-    public float colorG;
-    public float colorB;
-    public float colorA;
-
-    public string[] JsonConnectionIds;
 }
