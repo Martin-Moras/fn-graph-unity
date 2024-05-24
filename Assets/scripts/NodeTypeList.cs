@@ -4,27 +4,16 @@ using UnityEngine;
 
 public class NodeTypeList
 {
-    public string listName;
-    public string listId;
+    public string listPath;
     public List<Node> nodes;
     public Color color;
-    public string nodeName {get; private set;} 
-    public string inGoingConnectionName {get; private set;} 
-    public string inGoingConnectionId {get; private set;} 
-    public string outGoingConnectionName {get; private set;}
-    public string outGoingConnectionId {get; private set;}
+    public TypeListRequirement[] requirements;
 
-    public NodeTypeList(string listName, string listId, List<Node> nodes, Color color, string nodeName, string inGoingConnectionName, string inGoingConnectionId, string outGoingConnectionName, string outGoingConnectionId)
+    public NodeTypeList(string listPath, List<Node> nodes, Color color, TypeListRequirement[] requirements)
     {
-        this.listName = listName;
-        this.listId = listId;
+        this.listPath = listPath;
         this.nodes = nodes;
         this.color = color;
-        this.nodeName = nodeName;
-        this.inGoingConnectionName = inGoingConnectionName;
-        this.inGoingConnectionId = inGoingConnectionId;
-        this.outGoingConnectionName = outGoingConnectionName;
-        this.outGoingConnectionId = outGoingConnectionId;
+        this.requirements = requirements;
     }
 }
-

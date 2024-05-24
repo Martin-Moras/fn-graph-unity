@@ -12,6 +12,9 @@ public class VariableManager : MonoBehaviour
     #endregion
     public float nodeSelectionRadius;
     public float cameraMoveSpeed;
+    #region Save/Load
+    public string netSavePath;
+    #endregion
     #region Singleton
     public static VariableManager Instance { get; private set;}
     void SingletonizeThis()

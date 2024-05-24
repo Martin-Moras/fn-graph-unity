@@ -6,14 +6,14 @@ using UnityEngine;
 
 public class Node : MonoBehaviour
 {
-    public string nodeId { get; private set; }
-    public string nodeName { get; set;}
-    public void NodeConstructor(string id, string name){
-        this.nodeId = id;
-        this.nodeName = name;
+    public string nodePath { get; private set; }
+    public List<Node> nodes{ get; set; }
+    public void NodeConstructor(string path, List<Node> nodes){
+        this.nodePath = path;
+        this.nodes = nodes;
     }
     void Awake(){
-        if(nodeId == "" || nodeId == null) 
-        nodeId = UnityEngine.Random.Range(0, 500000).ToString();
+        if(nodePath == "" || nodePath == null) 
+        nodePath = UnityEngine.Random.Range(0, 500000).ToString();
     }
 }
