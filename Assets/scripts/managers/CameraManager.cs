@@ -8,6 +8,11 @@ public class CameraManager : MonoBehaviour {
         if (Instance != null && Instance != this) Destroy(this);
         else Instance = this;
     }
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
+    static void OnRuntimeMethodLoad()
+    {
+		Instance = FindObjectOfType<CameraManager>();
+	}
     #endregion
     void Awake()
     {

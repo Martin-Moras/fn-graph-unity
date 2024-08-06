@@ -7,10 +7,15 @@ using UnityEngine;
 public class Node : MonoBehaviour
 {
     public string nodePath { get; private set; }
-    public List<Node> nodes{ get; set; }
-    public void NodeConstructor(string path, List<Node> nodes){
+    public List<Node> connectedNodes{ get; set; } = new();
+    public List<Connection> connections{ get; set; } = new();
+    public void NodeConstructor(string path, List<Node> nodes, List<Connection> connections){
         this.nodePath = path;
-        this.nodes = nodes;
+        if (nodes == null) nodes = new();
+        else this.connectedNodes = nodes;
+        if (connections == null) connections = new();
+        else this.connections = connections;
+        
     }
     void Awake(){
         if(nodePath == "" || nodePath == null) 

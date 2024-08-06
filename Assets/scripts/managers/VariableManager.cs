@@ -5,8 +5,8 @@ using UnityEngine;
 public class VariableManager : MonoBehaviour
 {
     #region prefabs
-    public GameObject Node;
-    public GameObject Connection;
+    public GameObject NodePefab;
+    public GameObject ConnectionPrefab;
     public GameObject s;
     public GameObject a;
     #endregion

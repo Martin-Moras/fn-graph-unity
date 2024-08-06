@@ -12,7 +12,8 @@ public class NodeTypeList
     public NodeTypeList(string listPath, List<Node> nodes, Color color, TypeListRequirement[] requirements)
     {
         this.listPath = listPath;
-        this.nodes = nodes;
+        if (nodes == null) this.nodes = new List<Node>();
+        else this.nodes = nodes;
         this.color = color;
         this.requirements = requirements;
     }

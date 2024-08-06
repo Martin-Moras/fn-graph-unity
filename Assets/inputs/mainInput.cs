@@ -80,6 +80,15 @@ public partial class @MainInput: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""ConnectSelectedNodes"",
+                    ""type"": ""Button"",
+                    ""id"": ""a7414ba0-b688-46ba-af3e-4a2916326ccd"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -214,6 +223,39 @@ public partial class @MainInput: IInputActionCollection2, IDisposable
                     ""action"": ""MoveCamera"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""One Modifier"",
+                    ""id"": ""c8cd4629-945d-4430-b40f-7c10720df826"",
+                    ""path"": ""OneModifier"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ConnectSelectedNodes"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""modifier"",
+                    ""id"": ""ad446764-ada9-46ae-add9-1a272770bf3a"",
+                    ""path"": ""<Keyboard>/shift"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ConnectSelectedNodes"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""binding"",
+                    ""id"": ""41b487fd-c136-44a9-abfa-5852d03d802d"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ConnectSelectedNodes"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
                 }
             ]
         }
@@ -245,6 +287,7 @@ public partial class @MainInput: IInputActionCollection2, IDisposable
         m_mainScene_Save = m_mainScene.FindAction("Save", throwIfNotFound: true);
         m_mainScene_NewChildNode = m_mainScene.FindAction("NewChildNode", throwIfNotFound: true);
         m_mainScene_MoveCamera = m_mainScene.FindAction("MoveCamera", throwIfNotFound: true);
+        m_mainScene_ConnectSelectedNodes = m_mainScene.FindAction("ConnectSelectedNodes", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -312,6 +355,7 @@ public partial class @MainInput: IInputActionCollection2, IDisposable
     private readonly InputAction m_mainScene_Save;
     private readonly InputAction m_mainScene_NewChildNode;
     private readonly InputAction m_mainScene_MoveCamera;
+    private readonly InputAction m_mainScene_ConnectSelectedNodes;
     public struct MainSceneActions
     {
         private @MainInput m_Wrapper;
@@ -322,6 +366,7 @@ public partial class @MainInput: IInputActionCollection2, IDisposable
         public InputAction @Save => m_Wrapper.m_mainScene_Save;
         public InputAction @NewChildNode => m_Wrapper.m_mainScene_NewChildNode;
         public InputAction @MoveCamera => m_Wrapper.m_mainScene_MoveCamera;
+        public InputAction @ConnectSelectedNodes => m_Wrapper.m_mainScene_ConnectSelectedNodes;
         public InputActionMap Get() { return m_Wrapper.m_mainScene; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -349,6 +394,9 @@ public partial class @MainInput: IInputActionCollection2, IDisposable
             @MoveCamera.started += instance.OnMoveCamera;
             @MoveCamera.performed += instance.OnMoveCamera;
             @MoveCamera.canceled += instance.OnMoveCamera;
+            @ConnectSelectedNodes.started += instance.OnConnectSelectedNodes;
+            @ConnectSelectedNodes.performed += instance.OnConnectSelectedNodes;
+            @ConnectSelectedNodes.canceled += instance.OnConnectSelectedNodes;
         }
 
         private void UnregisterCallbacks(IMainSceneActions instance)
@@ -371,6 +419,9 @@ public partial class @MainInput: IInputActionCollection2, IDisposable
             @MoveCamera.started -= instance.OnMoveCamera;
             @MoveCamera.performed -= instance.OnMoveCamera;
             @MoveCamera.canceled -= instance.OnMoveCamera;
+            @ConnectSelectedNodes.started -= instance.OnConnectSelectedNodes;
+            @ConnectSelectedNodes.performed -= instance.OnConnectSelectedNodes;
+            @ConnectSelectedNodes.canceled -= instance.OnConnectSelectedNodes;
         }
 
         public void RemoveCallbacks(IMainSceneActions instance)
@@ -405,5 +456,6 @@ public partial class @MainInput: IInputActionCollection2, IDisposable
         void OnSave(InputAction.CallbackContext context);
         void OnNewChildNode(InputAction.CallbackContext context);
         void OnMoveCamera(InputAction.CallbackContext context);
+        void OnConnectSelectedNodes(InputAction.CallbackContext context);
     }
 }
