@@ -15,12 +15,21 @@ public class VariableManager : MonoBehaviour
     #region Save/Load
     public string netSavePath;
     #endregion
+    #region string pattern
+    //a string starts with:"o-"
+    public string originNodePattern = @"^o-";
+    public string originNodeString = @"o-";
+    //a string starts with:"i" + <some number> + "-"
+    public string instanceNodePattern = @"^i\d+-";
+    public string nodeFileEndingPattern = @"\.node$";
+    public string nodeFileEndingString = @".node";
+    #endregion
     #region Singleton
-    public static VariableManager Instance { get; private set;}
+    public static VariableManager inst { get; private set;}
     void SingletonizeThis()
     {
-        if (Instance != null && Instance != this) Destroy(this);
-        else Instance = this;
+        if (inst != null && inst != this) Destroy(this);
+        else inst = this;
     }
     #endregion
     void Awake()

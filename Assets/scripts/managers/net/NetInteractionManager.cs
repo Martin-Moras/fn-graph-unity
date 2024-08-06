@@ -17,16 +17,16 @@ public class NetInteractionManager : MonoBehaviour
     public delegate void EventHandler();
     #endregion
     #region Singleton
-    public static NetInteractionManager Instance { get; private set;}
+    public static NetInteractionManager inst { get; private set;}
     void SingletonizeThis()
     {
-        if (Instance != null && Instance != this) Destroy(this);
-        else Instance = this;
+        if (inst != null && inst != this) Destroy(this);
+        else inst = this;
     }
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     static void OnRuntimeMethodLoad()
     {
-		Instance = FindObjectOfType<NetInteractionManager>();
+		inst = FindObjectOfType<NetInteractionManager>();
 	}
     #endregion
     void Awake()
@@ -44,17 +44,17 @@ public class NetInteractionManager : MonoBehaviour
         ManageInputs();
     }
     private void ManageInputs(){
-        if (mainInput.mainScene.NewNode.triggered) NetContentManager.Instance.NewNode();
-        // if (mainInput.mainScene.ConnectSelectedNodes.triggered) NetManager.Instance.ConnectSelectedNodes();
-        // if (mainInput.mainScene.NewChildNode.triggered) NetManager.Instance.NewChildNode();
-        if (mainInput.mainScene.Load.triggered) BackupManager.Instance.Load();
+        if (mainInput.mainScene.NewNode.triggered) NetContentManager.inst.NewNode();
+        // if (mainInput.mainScene.ConnectSelectedNodes.triggered) NetManager.inst.ConnectSelectedNodes();
+        // if (mainInput.mainScene.NewChildNode.triggered) NetManager.inst.NewChildNode();
+        if (mainInput.mainScene.Load.triggered) BackupManager.inst.Load();
         if (mainInput.mainScene.Save.triggered) {
-            BackupManager.Instance.SaveNodes(NetContentManager.Instance.GetAllNodes().ToList());
-            BackupManager.Instance.SaveTypeLists(NetContentManager.Instance.nodeTypeLists);
+            BackupManager.inst.SaveNodes(NetContentManager.inst.GetAllNodes().ToList());
+            BackupManager.inst.SaveTypeLists(NetContentManager.inst.nodeTypeLists);
         }
-        if (mainInput.mainScene.ConnectToSelectedNodes.triggered) NetContentManager.Instance.ConnectSelectedNodes(GetNodeUnderCursor(), true);
-        else if (mainInput.mainScene.ConnectSelectedNodes.triggered) NetContentManager.Instance.ConnectSelectedNodes(GetNodeUnderCursor(), false);
-        else if (mainInput.mainScene.Select.triggered) NetContentManager.Instance.SelectNodes(new Node[]{GetNodeUnderCursor()});
+        if (mainInput.mainScene.ConnectToSelectedNodes.triggered) NetContentManager.inst.ConnectSelectedNodes(GetNodeUnderCursor(), true);
+        else if (mainInput.mainScene.ConnectSelectedNodes.triggered) NetContentManager.inst.ConnectSelectedNodes(GetNodeUnderCursor(), false);
+        else if (mainInput.mainScene.Select.triggered) NetContentManager.inst.SelectNodes(new Node[]{GetNodeUnderCursor()});
         //Camera
         moveCamera = mainInput.mainScene.MoveCamera.ReadValue<Vector2>();
         //Manage cursor position
@@ -62,7 +62,7 @@ public class NetInteractionManager : MonoBehaviour
         mousePosWorld = Camera.main.ScreenToWorldPoint(mousePosScreen);
     }
     public Node GetNodeUnderCursor(){
-        var objectsUnderCursor = Physics2D.OverlapCircleAll(mousePosWorld, VariableManager.Instance.nodeSelectionRadius);
+        var objectsUnderCursor = Physics2D.OverlapCircleAll(mousePosWorld, VariableManager.inst.nodeSelectionRadius);
 
         Collider2D closestCollider = objectsUnderCursor.FirstOrDefault();
         foreach (var objectUnderCursor in objectsUnderCursor)

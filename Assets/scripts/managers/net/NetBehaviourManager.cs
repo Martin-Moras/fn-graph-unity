@@ -15,11 +15,11 @@ public class NetBehaviourManager : MonoBehaviour
 	public float springRestLenght;
 	public float springDamping;
 	#region Singleton
-	public static NetBehaviourManager Instance { get; private set;}
+	public static NetBehaviourManager inst { get; private set;}
 	void SingletonizeThis()
 	{
-		if (Instance != null && Instance != this) Destroy(this);
-		else Instance = this;
+		if (inst != null && inst != this) Destroy(this);
+		else inst = this;
 	}
 	#endregion
 	
@@ -35,7 +35,7 @@ public class NetBehaviourManager : MonoBehaviour
 	/// applyes a spring force to each connection between nodes
 	/// </summary>
     private void ManageConnectionForces(){
-        foreach (var node in NetContentManager.Instance.GetAllNodes())
+        foreach (var node in NetContentManager.inst.GetAllNodes())
 		{
 			foreach (var connectedNode in node.connectedNodes)
 			{
@@ -62,4 +62,10 @@ public class NetBehaviourManager : MonoBehaviour
 			}
 		}
     }
+	private void DragNode(){
+
+	}
+	private void DropNode(){
+	
+	}
 }

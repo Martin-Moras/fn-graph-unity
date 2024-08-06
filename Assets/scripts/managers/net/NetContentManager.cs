@@ -16,11 +16,11 @@ public class NetContentManager : MonoBehaviour
 	public List<NodeTypeList> nodeTypeLists = new();
 	#region Singleton
 	
-	public static NetContentManager Instance { get; private set;}
+	public static NetContentManager inst { get; private set;}
 	void SingletonizeThis()
 	{
-		if (Instance != null && Instance != this) Destroy(this);
-		else Instance = this;
+		if (inst != null && inst != this) Destroy(this);
+		else inst = this;
 	}
 	#endregion
 	
@@ -30,22 +30,106 @@ public class NetContentManager : MonoBehaviour
 	}
 	void Update()
 	{
+		
 	}
 	
 	public Node NewNode(string path = ""){
-		var newNode = Instantiate(VariableManager.Instance.NodePefab).GetComponent<Node>();
-		
-		if (path == "" || GetAllNodes().ToList().Exists(x=>x.nodePath == path))
-			path += UnityEngine.Random.Range(0, 100000) + ".node"; 
-		newNode.NodeConstructor(path, new List<Node>(), new List<Connection>());
-		return newNode;
-	}
-	
-	
-	private void DragNode(){
+		//if path = "" change it to a random number
+		if (path == "")
+			path = "test";
+//			path = UnityEngine.Random.Range(0, int.MaxValue).ToString(); 
+		//if "path" doesn't have the node file ending, add it
+		if (!Regex.IsMatch(path, VariableManager.inst.nodeFileEndingPattern))
+			path = $"{path}{VariableManager.inst.nodeFileEndingString}";
+		//get all nodes
+		var allNodes = GetAllNodes().ToList();
+		//find a node with the same path
+		Node sameExistingNode = FindExistingNodeWithSamePath();
+		//if a node with the same path was found
+		if (sameExistingNode != null){
+			return ManageInstanceAndOriginNodes();
+		}
+		else{
+			//create a new node
+			var newNode = Instantiate(VariableManager.inst.NodePefab).GetComponent<Node>();
+			newNode.NodeConstructor(path, new List<Node>(), new List<Connection>());
+			
+			return newNode;
+		}
+		Node ManageInstanceAndOriginNodes(){
+			//if it is an origin node
+			if (Regex.IsMatch(sameExistingNode.nodePath, VariableManager.inst.originNodePattern)){
+				return sameExistingNode;
+			}
+			//if it is an instance node
+			else if(Regex.IsMatch(sameExistingNode.nodePath, VariableManager.inst.instanceNodePattern)){
+				return ManageInstanceNode();
+			}
+			//if it is a normal node
+			else {
+				return ManageNormalNode();
+			}
 
+			Node ManageInstanceNode(){
+				//remove the part that starts with:"i" + <some number> + "-"
+				var cleanPath = Regex.Replace(path, VariableManager.inst.instanceNodePattern, "");
+				//find the matching origis node
+				var originNode = allNodes.Find(x=>x.nodePath == $"o-{cleanPath}");
+				//create the origin node if it doesn't exist
+				if (originNode != null) originNode = NewNode($"o-{cleanPath}");
+				//find a instance number that doesn't allready exist
+				Node newInstanceNode = null;
+				for (int i = 1; i < int.MaxValue; i++){
+					//create a new path. Format: i{i}-{cleanPath} 
+					var newPath = $"i{i}-{cleanPath}";
+					//if the new path exists continue
+					if (originNode.connectedNodes.Exists(x=>x.nodePath == newPath))
+						continue;
+					//create a new node named after the new path
+					newInstanceNode = NewNode(newPath);
+					//connect the newInstanceNode to the originNode 
+					ConnectNodes(originNode, newInstanceNode);
+					break;
+				}
+				return newInstanceNode;
+			}
+			Node ManageNormalNode(){
+				//origin
+				var originNode = NewNode($"o-{path}");
+				//change name of allready existing node with the same path
+				sameExistingNode.NodeConstructor($"i1-{path}", sameExistingNode.connectedNodes, sameExistingNode.connections);
+				//Instance
+				var instanceNode = NewNode($"i2-{path}");
+				//connect instanceNode and sameExistingNode to originNode
+				ConnectNodes(originNode, instanceNode);
+				ConnectNodes(originNode, sameExistingNode);
+
+				return instanceNode;
+			}
+		}
+		Node FindExistingNodeWithSamePath(){
+			//declare an array with all patterns that need to be checked
+			string[] patternsToCheck = new[]{
+				VariableManager.inst.instanceNodePattern,
+				VariableManager.inst.originNodePattern,
+			};
+			//loop through all nodes
+			foreach (var node in allNodes){
+				//loop through all patterns
+				foreach (var pattern in patternsToCheck)
+				{
+					//check if the node matches the path if the pattern is removed from the string
+					if (Regex.Replace(node.nodePath, pattern, "") == path)
+						return node;
+				}
+			}
+			//if no node with the same path was found, return null
+			return null;
+		}
 	}
-	private void DropNode(){
+	
+	
+	
 /*
 create/delete nodes/connections
 type lists + behaviour
@@ -56,10 +140,9 @@ behaviour
 	connections limit the angle a connected node can be at
 	node summary
 */
-	}
 	public void ConnectNewNode(Node node, out Node newNode){
 		//instantiate a new node
-		var newNodeObj = Instantiate(VariableManager.Instance.NodePefab, node.transform.position, quaternion.identity);
+		var newNodeObj = Instantiate(VariableManager.inst.NodePefab, node.transform.position, quaternion.identity);
 		newNode = newNodeObj.GetComponent<Node>();
 		ConnectNodes(node, newNode);
 	}
@@ -69,7 +152,7 @@ behaviour
 		if (updateTypeLists) UpdateTypeLists();
 	}
 	public Connection NewConnection(Node outNode){
-		var newConnetion = Instantiate(VariableManager.Instance.ConnectionPrefab).GetComponent<Connection>();
+		var newConnetion = Instantiate(VariableManager.inst.ConnectionPrefab).GetComponent<Connection>();
 		newConnetion.outNode = outNode;
 		return newConnetion;
 	}
@@ -95,6 +178,9 @@ behaviour
 				node.connections[i].line.SetPositions(new[]{node.transform.position, node.connectedNodes[i].transform.position});
 			}
 		}
+	}
+	public Node[] GetAllNodes(){
+		return GameObject.FindObjectsOfType<Node>();
 	}
 	#region Delete
 	/*public void DeleteConnection(Connection connection){
@@ -128,11 +214,6 @@ behaviour
 		Destroy(node.gameObject);
 	}
 	# endregion
-	public Node[] GetAllNodes(){
-		return GameObject.FindObjectsOfType<Node>();
-	}
-
-	
 	#region TypeList
 	public void UpdateTypeLists(){
 		TryAddToNodesTypeLists(GetAllNodes(), nodeTypeLists.ToArray());

@@ -2,16 +2,16 @@ using UnityEngine;
 using UnityEngine.Scripting.APIUpdating;
 public class CameraManager : MonoBehaviour {
     #region Singleton
-    public static CameraManager Instance { get; private set;}
+    public static CameraManager inst { get; private set;}
     void SingletonizeThis()
     {
-        if (Instance != null && Instance != this) Destroy(this);
-        else Instance = this;
+        if (inst != null && inst != this) Destroy(this);
+        else inst = this;
     }
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     static void OnRuntimeMethodLoad()
     {
-		Instance = FindObjectOfType<CameraManager>();
+		inst = FindObjectOfType<CameraManager>();
 	}
     #endregion
     void Awake()
@@ -22,6 +22,6 @@ public class CameraManager : MonoBehaviour {
         moveCamera();
     }
     private void moveCamera(){
-        transform.position += (Vector3)NetInteractionManager.Instance.moveCamera * VariableManager.Instance.cameraMoveSpeed;
+        transform.position += (Vector3)NetInteractionManager.inst.moveCamera * VariableManager.inst.cameraMoveSpeed;
     }
 }

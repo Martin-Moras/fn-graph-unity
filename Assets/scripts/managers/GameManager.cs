@@ -5,11 +5,11 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     #region Singleton
-    public static GameManager Instance { get; private set;}
+    public static GameManager inst { get; private set;}
     void SingletonizeThis()
     {
-        if (Instance != null && Instance != this) Destroy(this);
-        else Instance = this;
+        if (inst != null && inst != this) Destroy(this);
+        else inst = this;
     }
     #endregion
     void Awake()
