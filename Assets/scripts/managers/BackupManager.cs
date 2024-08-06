@@ -114,7 +114,7 @@ public class BackupManager : MonoBehaviour
         var newNodes = DeserializeNodes();
 		ConnectNewNodes(newNodes);
 		AddNodeTypeLists();
-        NetManager.Instance.UpdateTypeLists();
+        NetContentManager.Instance.UpdateTypeLists();
 
 		
 		List<(Node, List<string>)> DeserializeNodes(){
@@ -125,7 +125,7 @@ public class BackupManager : MonoBehaviour
 				var lines = nodeFile.Split().ToList();
 				var nameIndex = lines.IndexOf("node-name:") + 1;
 				string path = lines[nameIndex];
-				var newNode = (NetManager.Instance.NewNode(path), new List<string>());
+				var newNode = (NetContentManager.Instance.NewNode(path), new List<string>());
 				newNodes.Add(newNode);
 				
 				var nodesStartingIndex = lines.IndexOf("connections:") + 1;
@@ -139,7 +139,7 @@ public class BackupManager : MonoBehaviour
 
 		}
 		void ConnectNewNodes(List<(Node, List<string>)> newNodes){
-			var allNodes = NetManager.Instance.GetAllNodes().ToList();
+			var allNodes = NetContentManager.Instance.GetAllNodes().ToList();
 
 			foreach (var node in newNodes) {
 				foreach (var connectedNodePath in node.Item2)
@@ -147,11 +147,11 @@ public class BackupManager : MonoBehaviour
 					var connectedNode = allNodes.Find(x=>x.nodePath == connectedNodePath);
 					//Create Node if doesn't exist
 					if (connectedNode == null){
-						connectedNode = NetManager.Instance.NewNode(connectedNodePath);
+						connectedNode = NetContentManager.Instance.NewNode(connectedNodePath);
 						allNodes.Add(connectedNode);
 					}
 					//Connect Node
-					NetManager.Instance.ConnectNodes(node.Item1, connectedNode);
+					NetContentManager.Instance.ConnectNodes(node.Item1, connectedNode);
 				}
 			}
 		}
@@ -166,7 +166,7 @@ public class BackupManager : MonoBehaviour
 				var lines = listFile.Split().ToList();
 				var pathIndex = lines.IndexOf("list-name:") + 1;
 				var newList = new NodeTypeList(lines[pathIndex], null, Color.clear, DeserializeRequirements());
-				NetManager.Instance.nodeTypeLists.Add(newList);
+				NetContentManager.Instance.nodeTypeLists.Add(newList);
 
 				TypeListRequirement[] DeserializeRequirements(){
 					var currentIndex = lines.IndexOf("requirements:") + 1;

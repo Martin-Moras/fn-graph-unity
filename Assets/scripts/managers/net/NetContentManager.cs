@@ -6,15 +6,16 @@ using Unity.Mathematics;
 using UnityEditor;
 using UnityEngine;
 using System.Text.RegularExpressions;
+using UnityEngine.AI;
 
 
-public class NetManager : MonoBehaviour
+public class NetContentManager : MonoBehaviour
 {
 	public string id;
 	public List<NodeTypeList> nodeTypeLists = new();
 	#region Singleton
 	
-	public static NetManager Instance { get; private set;}
+	public static NetContentManager Instance { get; private set;}
 	void SingletonizeThis()
 	{
 		if (Instance != null && Instance != this) Destroy(this);
@@ -38,11 +39,7 @@ public class NetManager : MonoBehaviour
 		newNode.NodeConstructor(path, new List<Node>(), new List<Connection>());
 		return newNode;
 	}
-	public Connection NewConnection(Node outNode){
-		var newConnetion = Instantiate(VariableManager.Instance.ConnectionPrefab).GetComponent<Connection>();
-		newConnetion.outNode = outNode;
-		return newConnetion;
-	}
+	
 	
 	private void DragNode(){
 
@@ -70,6 +67,11 @@ behaviour
 		inputNode.connections.Add(NewConnection(outputNode));
 		UpdateTypeLists();
 	}
+	public Connection NewConnection(Node outNode){
+		var newConnetion = Instantiate(VariableManager.Instance.ConnectionPrefab).GetComponent<Connection>();
+		newConnetion.outNode = outNode;
+		return newConnetion;
+	}
 	public void DisconnectNodes(Node inputNode, Node outputNode){
 		inputNode.connectedNodes.Remove(outputNode);
 		var connection = inputNode.connections.Find(x=>x.outNode == outputNode);
@@ -79,9 +81,9 @@ behaviour
 		UpdateTypeLists();
 	}
 	public Node GetNode(string nodePath, bool createIfDoesntExist, bool tryAddToNodesTypeLists){
-		Node newSelectedNode = GetAllNodes().ToList().Find(x=>x.nodePath == "identifiers/selected.node");
+		Node newSelectedNode = GetAllNodes().ToList().Find(x=>x.nodePath == nodePath);
 			if (newSelectedNode == null && createIfDoesntExist)
-				newSelectedNode = NewNode("identifiers/selected.node");
+				newSelectedNode = NewNode(nodePath);
 			if (tryAddToNodesTypeLists) TryAddToNodesTypeLists(new[]{newSelectedNode});
 		return newSelectedNode;
 	}
@@ -175,11 +177,10 @@ behaviour
             return regex.IsMatch(path);
 		}
 	}
-	public void SelectNode(){
-		foreach (var node in GetAllNodes()){
-			//if node is in "nodeSelectionRadius"
-			if (((Vector2)node.transform.position - InputManager.Instance.mousePosWorld).magnitude > VariableManager.Instance.nodeSelectionRadius) continue;
-			
+	public void SelectNodes(Node[] nodesToSelect){
+		foreach (var node in nodesToSelect){
+			if (node == null) continue;
+			//find the "selected" type list
 			var selectedTypeList = nodeTypeLists.Find(x=>x.listPath == "selected.tlist");
 			//Create selected.tlist if it doesn't exist
 			if (selectedTypeList == null){
@@ -211,6 +212,9 @@ behaviour
 				TryAddToNodesTypeLists(new[]{node});
 			}
 		}
+	}
+	public void ConnectSelectedNodes(){
+
 	}
 	public void ManageConnectionForcesTList(){
 		var connForceTypeList = nodeTypeLists.Find(x=>x.listPath == "connection-force.tlist");

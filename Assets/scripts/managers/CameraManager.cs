@@ -22,6 +22,6 @@ public class CameraManager : MonoBehaviour {
         moveCamera();
     }
     private void moveCamera(){
-        transform.position += (Vector3)InputManager.Instance.moveCamera;
+        transform.position += (Vector3)NetInteractionManager.Instance.moveCamera * VariableManager.Instance.cameraMoveSpeed;
     }
 }

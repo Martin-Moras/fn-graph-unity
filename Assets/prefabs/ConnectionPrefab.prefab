@@ -45,7 +45,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4b7a5bcf03953512d82b3cdc705873bc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  connectedNode: {fileID: 0}
+  line: {fileID: 0}
+  outNode: {fileID: 0}
 --- !u!120 &4529434955059103929
 LineRenderer:
   serializedVersion: 2
@@ -136,7 +137,7 @@ LineRenderer:
       atime6: 0
       atime7: 0
       m_Mode: 0
-      m_ColorSpace: 0
+      m_ColorSpace: -1
       m_NumColorKeys: 2
       m_NumAlphaKeys: 2
     numCornerVertices: 0

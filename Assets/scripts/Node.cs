@@ -19,6 +19,6 @@ public class Node : MonoBehaviour
     }
     void Awake(){
         if(nodePath == "" || nodePath == null) 
-        nodePath = UnityEngine.Random.Range(0, 500000).ToString();
+            nodePath = UnityEngine.Random.Range(0, 500000).ToString();
     }
 }
