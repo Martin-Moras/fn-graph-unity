@@ -9,12 +9,16 @@ public class VariableManager : MonoBehaviour
     public GameObject ConnectionPrefab;
     public GameObject s;
     public GameObject a;
-    #endregion
+    #endregion prefabs
     public float nodeSelectionRadius;
+    #region Camera
     public float cameraMoveSpeed;
+    public float cameraSizechangeSpeed;
+    public float cameraDefaultSize;
+    #endregion Camera
     #region Save/Load
     public string netSavePath;
-    #endregion
+    #endregion Save/Load
     #region string pattern
     //a string starts with:"o-"
     public string originNodePattern = @"^o-";
@@ -23,7 +27,7 @@ public class VariableManager : MonoBehaviour
     public string instanceNodePattern = @"^i\d+-";
     public string nodeFileEndingPattern = @"\.node$";
     public string nodeFileEndingString = @".node";
-    #endregion
+    #endregion string pattern
     #region Singleton
     public static VariableManager inst { get; private set;}
     void SingletonizeThis()
@@ -31,7 +35,7 @@ public class VariableManager : MonoBehaviour
         if (inst != null && inst != this) Destroy(this);
         else inst = this;
     }
-    #endregion
+    #endregion Singleton
     void Awake()
     {
         SingletonizeThis();

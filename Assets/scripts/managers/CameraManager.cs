@@ -14,14 +14,31 @@ public class CameraManager : MonoBehaviour {
 		inst = FindObjectOfType<CameraManager>();
 	}
     #endregion
+    public Camera mainCamera;
     void Awake()
     {
         SingletonizeThis();
     }
-    private void LateUpdate(){
-        moveCamera();
+    private void Start() {
+        mainCamera = GetComponent<Camera>();
+        //set camera to default size
+        mainCamera.orthographicSize = VariableManager.inst.cameraDefaultSize;
+    
     }
-    private void moveCamera(){
+    private void LateUpdate(){
+        MoveCamera();
+        ChangeSize();
+    }
+    private void MoveCamera(){
         transform.position += (Vector3)NetInteractionManager.inst.moveCamera * VariableManager.inst.cameraMoveSpeed;
+    }
+    private void ChangeSize(){
+        var minSize = .1f;
+        var sizeChange = VariableManager.inst.cameraSizechangeSpeed * NetInteractionManager.inst.changeCameraSize;
+        
+        if ((mainCamera.orthographicSize + sizeChange) < minSize) 
+            mainCamera.orthographicSize = minSize;
+        else
+            mainCamera.orthographicSize += sizeChange;
     }
 }

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data.SqlTypes;
@@ -13,6 +14,7 @@ public class NetInteractionManager : MonoBehaviour
     public Vector2 mousePosWorld;
     public Vector2 mousePosScreen;
     public Vector2 moveCamera;
+    public float changeCameraSize;
     #region events
     public delegate void EventHandler();
     #endregion
@@ -57,6 +59,7 @@ public class NetInteractionManager : MonoBehaviour
         else if (mainInput.mainScene.Select.triggered) NetContentManager.inst.SelectNodes(new Node[]{GetNodeUnderCursor()});
         //Camera
         moveCamera = mainInput.mainScene.MoveCamera.ReadValue<Vector2>();
+        changeCameraSize = MathF.Sign(mainInput.mainScene.ChangeCameraSize.ReadValue<float>());
         //Manage cursor position
         mousePosScreen = Input.mousePosition;
         mousePosWorld = Camera.main.ScreenToWorldPoint(mousePosScreen);

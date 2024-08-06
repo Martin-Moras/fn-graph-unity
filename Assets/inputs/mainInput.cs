@@ -82,6 +82,15 @@ public partial class @MainInput: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": true
                 },
                 {
+                    ""name"": ""ChangeCameraSize"",
+                    ""type"": ""Button"",
+                    ""id"": ""7b1737d2-7fd8-4116-ba85-a55f332cfba5"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
                     ""name"": ""ConnectSelectedNodes"",
                     ""type"": ""Button"",
                     ""id"": ""a7414ba0-b688-46ba-af3e-4a2916326ccd"",
@@ -320,6 +329,72 @@ public partial class @MainInput: IInputActionCollection2, IDisposable
                     ""action"": ""ConnectToSelectedNodes"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""Keyboard"",
+                    ""id"": ""cae324cc-8f69-4f4c-b2e4-fb6fdc767345"",
+                    ""path"": ""1DAxis"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ChangeCameraSize"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""negative"",
+                    ""id"": ""9953f52d-e3a3-444b-bbc5-79758620000c"",
+                    ""path"": ""<Keyboard>/numpadMinus"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Pc"",
+                    ""action"": ""ChangeCameraSize"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""positive"",
+                    ""id"": ""9d47a8fb-7588-4547-ad1c-5c361c76a1d3"",
+                    ""path"": ""<Keyboard>/numpadPlus"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Pc"",
+                    ""action"": ""ChangeCameraSize"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""Mouse"",
+                    ""id"": ""fcb05c23-47b1-4fb4-b10c-8242bdc1961a"",
+                    ""path"": ""1DAxis"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ChangeCameraSize"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""negative"",
+                    ""id"": ""751e228d-05d3-4bdf-b4ae-ba796b329afa"",
+                    ""path"": ""<Mouse>/scroll/down"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ChangeCameraSize"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""positive"",
+                    ""id"": ""6ec5cb79-bacf-4b6a-ab80-eb74b34b9fc2"",
+                    ""path"": ""<Mouse>/scroll/up"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ChangeCameraSize"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
                 }
             ]
         }
@@ -351,6 +426,7 @@ public partial class @MainInput: IInputActionCollection2, IDisposable
         m_mainScene_Save = m_mainScene.FindAction("Save", throwIfNotFound: true);
         m_mainScene_NewChildNode = m_mainScene.FindAction("NewChildNode", throwIfNotFound: true);
         m_mainScene_MoveCamera = m_mainScene.FindAction("MoveCamera", throwIfNotFound: true);
+        m_mainScene_ChangeCameraSize = m_mainScene.FindAction("ChangeCameraSize", throwIfNotFound: true);
         m_mainScene_ConnectSelectedNodes = m_mainScene.FindAction("ConnectSelectedNodes", throwIfNotFound: true);
         m_mainScene_ConnectToSelectedNodes = m_mainScene.FindAction("ConnectToSelectedNodes", throwIfNotFound: true);
     }
@@ -420,6 +496,7 @@ public partial class @MainInput: IInputActionCollection2, IDisposable
     private readonly InputAction m_mainScene_Save;
     private readonly InputAction m_mainScene_NewChildNode;
     private readonly InputAction m_mainScene_MoveCamera;
+    private readonly InputAction m_mainScene_ChangeCameraSize;
     private readonly InputAction m_mainScene_ConnectSelectedNodes;
     private readonly InputAction m_mainScene_ConnectToSelectedNodes;
     public struct MainSceneActions
@@ -432,6 +509,7 @@ public partial class @MainInput: IInputActionCollection2, IDisposable
         public InputAction @Save => m_Wrapper.m_mainScene_Save;
         public InputAction @NewChildNode => m_Wrapper.m_mainScene_NewChildNode;
         public InputAction @MoveCamera => m_Wrapper.m_mainScene_MoveCamera;
+        public InputAction @ChangeCameraSize => m_Wrapper.m_mainScene_ChangeCameraSize;
         public InputAction @ConnectSelectedNodes => m_Wrapper.m_mainScene_ConnectSelectedNodes;
         public InputAction @ConnectToSelectedNodes => m_Wrapper.m_mainScene_ConnectToSelectedNodes;
         public InputActionMap Get() { return m_Wrapper.m_mainScene; }
@@ -461,6 +539,9 @@ public partial class @MainInput: IInputActionCollection2, IDisposable
             @MoveCamera.started += instance.OnMoveCamera;
             @MoveCamera.performed += instance.OnMoveCamera;
             @MoveCamera.canceled += instance.OnMoveCamera;
+            @ChangeCameraSize.started += instance.OnChangeCameraSize;
+            @ChangeCameraSize.performed += instance.OnChangeCameraSize;
+            @ChangeCameraSize.canceled += instance.OnChangeCameraSize;
             @ConnectSelectedNodes.started += instance.OnConnectSelectedNodes;
             @ConnectSelectedNodes.performed += instance.OnConnectSelectedNodes;
             @ConnectSelectedNodes.canceled += instance.OnConnectSelectedNodes;
@@ -489,6 +570,9 @@ public partial class @MainInput: IInputActionCollection2, IDisposable
             @MoveCamera.started -= instance.OnMoveCamera;
             @MoveCamera.performed -= instance.OnMoveCamera;
             @MoveCamera.canceled -= instance.OnMoveCamera;
+            @ChangeCameraSize.started -= instance.OnChangeCameraSize;
+            @ChangeCameraSize.performed -= instance.OnChangeCameraSize;
+            @ChangeCameraSize.canceled -= instance.OnChangeCameraSize;
             @ConnectSelectedNodes.started -= instance.OnConnectSelectedNodes;
             @ConnectSelectedNodes.performed -= instance.OnConnectSelectedNodes;
             @ConnectSelectedNodes.canceled -= instance.OnConnectSelectedNodes;
@@ -529,6 +613,7 @@ public partial class @MainInput: IInputActionCollection2, IDisposable
         void OnSave(InputAction.CallbackContext context);
         void OnNewChildNode(InputAction.CallbackContext context);
         void OnMoveCamera(InputAction.CallbackContext context);
+        void OnChangeCameraSize(InputAction.CallbackContext context);
         void OnConnectSelectedNodes(InputAction.CallbackContext context);
         void OnConnectToSelectedNodes(InputAction.CallbackContext context);
     }
