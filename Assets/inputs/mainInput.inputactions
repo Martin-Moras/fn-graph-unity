@@ -67,6 +67,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "ConnectToSelectedNodes",
+                    "type": "Button",
+                    "id": "6c520d2e-688d-423e-ae40-3aaf0621f630",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -216,7 +225,7 @@
                 {
                     "name": "modifier",
                     "id": "ad446764-ada9-46ae-add9-1a272770bf3a",
-                    "path": "<Keyboard>/shift",
+                    "path": "<Keyboard>/ctrl",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -232,6 +241,61 @@
                     "processors": "",
                     "groups": "",
                     "action": "ConnectSelectedNodes",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "One Modifier",
+                    "id": "501900c1-841b-4322-8c90-7b5dddd28d42",
+                    "path": "OneModifier",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ConnectToSelectedNodes",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "Two Modifiers",
+                    "id": "f231514c-f08f-4d2f-bab2-4eff12df2347",
+                    "path": "TwoModifiers",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ConnectToSelectedNodes",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "modifier1",
+                    "id": "a0c63b65-062b-4cfd-ab7b-4ab2664263d1",
+                    "path": "<Keyboard>/ctrl",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Pc",
+                    "action": "ConnectToSelectedNodes",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "modifier2",
+                    "id": "17b86fde-13c0-4106-98c9-cf56606d92cc",
+                    "path": "<Keyboard>/shift",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Pc",
+                    "action": "ConnectToSelectedNodes",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "binding",
+                    "id": "31dd6d96-f421-48b9-8c4b-42fc5cab219a",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Pc",
+                    "action": "ConnectToSelectedNodes",
                     "isComposite": false,
                     "isPartOfComposite": true
                 }

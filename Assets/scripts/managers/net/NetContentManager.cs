@@ -7,6 +7,7 @@ using UnityEditor;
 using UnityEngine;
 using System.Text.RegularExpressions;
 using UnityEngine.AI;
+using Unity.VisualScripting;
 
 
 public class NetContentManager : MonoBehaviour
@@ -62,10 +63,10 @@ behaviour
 		newNode = newNodeObj.GetComponent<Node>();
 		ConnectNodes(node, newNode);
 	}
-	public void ConnectNodes(Node inputNode, Node outputNode){
+	public void ConnectNodes(Node inputNode, Node outputNode, bool updateTypeLists = true){
 		inputNode.connectedNodes.Add(outputNode);
 		inputNode.connections.Add(NewConnection(outputNode));
-		UpdateTypeLists();
+		if (updateTypeLists) UpdateTypeLists();
 	}
 	public Connection NewConnection(Node outNode){
 		var newConnetion = Instantiate(VariableManager.Instance.ConnectionPrefab).GetComponent<Connection>();
@@ -213,8 +214,15 @@ behaviour
 			}
 		}
 	}
-	public void ConnectSelectedNodes(){
-
+	public void ConnectSelectedNodes(Node nodeToConnectTo, bool reverseConnect){
+		var selectedTypeList = nodeTypeLists.Find(x=>x.listPath == "selected.tlist");
+		if (selectedTypeList == null || selectedTypeList.nodes.Count == 0) return;
+		foreach (var selectedNode in selectedTypeList.nodes)
+		{
+			if (reverseConnect) ConnectNodes(nodeToConnectTo, selectedNode, false);
+			else ConnectNodes(selectedNode, nodeToConnectTo, false);
+		}
+		UpdateTypeLists();
 	}
 	public void ManageConnectionForcesTList(){
 		var connForceTypeList = nodeTypeLists.Find(x=>x.listPath == "connection-force.tlist");

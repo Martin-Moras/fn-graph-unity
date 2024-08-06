@@ -46,14 +46,15 @@ public class NetInteractionManager : MonoBehaviour
     private void ManageInputs(){
         if (mainInput.mainScene.NewNode.triggered) NetContentManager.Instance.NewNode();
         // if (mainInput.mainScene.ConnectSelectedNodes.triggered) NetManager.Instance.ConnectSelectedNodes();
-        if (mainInput.mainScene.Select.triggered) NetContentManager.Instance.SelectNodes(new Node[]{GetNodeUnderCursor()});
         // if (mainInput.mainScene.NewChildNode.triggered) NetManager.Instance.NewChildNode();
         if (mainInput.mainScene.Load.triggered) BackupManager.Instance.Load();
         if (mainInput.mainScene.Save.triggered) {
             BackupManager.Instance.SaveNodes(NetContentManager.Instance.GetAllNodes().ToList());
             BackupManager.Instance.SaveTypeLists(NetContentManager.Instance.nodeTypeLists);
         }
-        if (mainInput.mainScene.ConnectSelectedNodes.triggered) NetContentManager.Instance.ConnectSelectedNodes();
+        if (mainInput.mainScene.ConnectToSelectedNodes.triggered) NetContentManager.Instance.ConnectSelectedNodes(GetNodeUnderCursor(), true);
+        else if (mainInput.mainScene.ConnectSelectedNodes.triggered) NetContentManager.Instance.ConnectSelectedNodes(GetNodeUnderCursor(), false);
+        else if (mainInput.mainScene.Select.triggered) NetContentManager.Instance.SelectNodes(new Node[]{GetNodeUnderCursor()});
         //Camera
         moveCamera = mainInput.mainScene.MoveCamera.ReadValue<Vector2>();
         //Manage cursor position
