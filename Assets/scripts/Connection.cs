@@ -7,8 +7,8 @@ using UnityEngine;
 public class Connection : MonoBehaviour
 {
     public LineRenderer line;
-    public Node outNode;
-    private void Awake() {
+    public DataNode outNode;
+    public override void Initiallize()() {
         line = GetComponent<LineRenderer>();
     }
 }

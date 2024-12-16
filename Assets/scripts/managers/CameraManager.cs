@@ -1,6 +1,6 @@
 using UnityEngine;
 using UnityEngine.Scripting.APIUpdating;
-public class CameraManager : MonoBehaviour {
+public class CameraManager : I_Manager {
     #region Singleton
     public static CameraManager inst { get; private set;}
     void SingletonizeThis()
@@ -15,7 +15,7 @@ public class CameraManager : MonoBehaviour {
 	}
     #endregion
     public Camera mainCamera;
-    void Awake()
+	public override void Initiallize()
     {
         SingletonizeThis();
     }
@@ -40,5 +40,10 @@ public class CameraManager : MonoBehaviour {
             mainCamera.orthographicSize = minSize;
         else
             mainCamera.orthographicSize += sizeChange;
+    }
+
+    public override void Initiallize()
+    {
+        throw new System.NotImplementedException();
     }
 }

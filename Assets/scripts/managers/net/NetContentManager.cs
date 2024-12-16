@@ -10,7 +10,7 @@ using UnityEngine.AI;
 using Unity.VisualScripting;
 
 
-public class NetContentManager : MonoBehaviour
+public class NetContentManager : I_Manager
 {
 	public string id;
 	public List<NodeTypeList> nodeTypeLists = new();
@@ -24,201 +24,101 @@ public class NetContentManager : MonoBehaviour
 	}
 	#endregion
 	
-	void Awake()
+	public override void Initiallize()
 	{
 		SingletonizeThis();
 	}
-	void Update()
+	/// <summary>
+	/// creates a new node. 
+	/// </summary>
+	/// <param name="nodePath"></param>
+	/// <returns></returns>
+	public DataNode NewNode(uint nodeId, List<uint> connectedNodeIds, string nodePath = "")
 	{
-		
-	}
-	
-	public Node NewNode(string path = ""){
 		//if path = "" change it to a random number
-		if (path == "")
-			path = "test";
-//			path = UnityEngine.Random.Range(0, int.MaxValue).ToString(); 
-		//if "path" doesn't have the node file ending, add it
-		if (!Regex.IsMatch(path, VariableManager.inst.nodeFileEndingPattern))
-			path = $"{path}{VariableManager.inst.nodeFileEndingString}";
-		//get all nodes
-		var allNodes = GetAllNodes().ToList();
-		//find a node with the same path
-		Node sameExistingNode = FindExistingNodeWithSamePath();
-		//if a node with the same path was found
-		if (sameExistingNode != null){
-			return ManageInstanceAndOriginNodes();
-		}
-		else{
-			//create a new node
-			var newNode = Instantiate(VariableManager.inst.NodePefab).GetComponent<Node>();
-			newNode.NodeConstructor(path, new List<Node>(), new List<Connection>());
-			
-			return newNode;
-		}
-		Node ManageInstanceAndOriginNodes(){
-			//if it is an origin node
-			if (Regex.IsMatch(sameExistingNode.nodePath, VariableManager.inst.originNodePattern)){
-				return sameExistingNode;
-			}
-			//if it is an instance node
-			else if(Regex.IsMatch(sameExistingNode.nodePath, VariableManager.inst.instanceNodePattern)){
-				return ManageInstanceNode();
-			}
-			//if it is a normal node
-			else {
-				return ManageNormalNode();
-			}
-
-			Node ManageInstanceNode(){
-				//remove the part that starts with:"i" + <some number> + "-"
-				var cleanPath = Regex.Replace(path, VariableManager.inst.instanceNodePattern, "");
-				//find the matching origis node
-				var originNode = allNodes.Find(x=>x.nodePath == $"o-{cleanPath}");
-				//create the origin node if it doesn't exist
-				if (originNode != null) originNode = NewNode($"o-{cleanPath}");
-				//find a instance number that doesn't allready exist
-				Node newInstanceNode = null;
-				for (int i = 1; i < int.MaxValue; i++){
-					//create a new path. Format: i{i}-{cleanPath} 
-					var newPath = $"i{i}-{cleanPath}";
-					//if the new path exists continue
-					if (originNode.connectedNodes.Exists(x=>x.nodePath == newPath))
-						continue;
-					//create a new node named after the new path
-					newInstanceNode = NewNode(newPath);
-					//connect the newInstanceNode to the originNode 
-					ConnectNodes(originNode, newInstanceNode);
-					break;
-				}
-				return newInstanceNode;
-			}
-			Node ManageNormalNode(){
-				//origin
-				var originNode = NewNode($"o-{path}");
-				//change name of allready existing node with the same path
-				sameExistingNode.NodeConstructor($"i1-{path}", sameExistingNode.connectedNodes, sameExistingNode.connections);
-				//Instance
-				var instanceNode = NewNode($"i2-{path}");
-				//connect instanceNode and sameExistingNode to originNode
-				ConnectNodes(originNode, instanceNode);
-				ConnectNodes(originNode, sameExistingNode);
-
-				return instanceNode;
-			}
-		}
-		Node FindExistingNodeWithSamePath(){
-			//declare an array with all patterns that need to be checked
-			string[] patternsToCheck = new[]{
-				VariableManager.inst.instanceNodePattern,
-				VariableManager.inst.originNodePattern,
-			};
-			//loop through all nodes
-			foreach (var node in allNodes){
-				//loop through all patterns
-				foreach (var pattern in patternsToCheck)
-				{
-					//check if the node matches the path if the pattern is removed from the string
-					if (Regex.Replace(node.nodePath, pattern, "") == path)
-						return node;
+		if (nodePath == "")
+			nodePath = UnityEngine.Random.Range(0, int.MaxValue).ToString(); 
+		//create a new node
+		var newNode = new DataNode(nodePath, nodeId, connectedNodeIds);
+		SetConnectedDataNodesBasedOnConnectedNodeId(newNode);
+		return newNode;
+	}
+	public void SetConnectedDataNodesBasedOnConnectedNodeId(DataNode dataNode)
+	{
+		foreach (var currDataNode in GetAllNodes()) {
+			//find and connect all nodes to dataNode
+			foreach (var connectedNodeId in currDataNode.connectedNodeIds) {
+				if (dataNode.nodeId == connectedNodeId) {
+					if (!currDataNode.connectedNodes.Exists(x => x == dataNode)) {
+						currDataNode.connectedNodes.Add(dataNode);
+					}
 				}
 			}
-			//if no node with the same path was found, return null
-			return null;
+			//connect all nodes to dataNode
+			foreach (var connectedNodeId in dataNode.connectedNodeIds) {
+				if (currDataNode.nodeId == connectedNodeId) {
+					if (!dataNode.connectedNodes.Exists(x => x == currDataNode)) {
+						dataNode.connectedNodes.Add(currDataNode);
+					}
+				}
+			}
 		}
 	}
-	
-	
-	
-/*
-create/delete nodes/connections
-type lists + behaviour
-(dis)connect nodes
-behaviour
-	nodes repell each other
-	connections pull and push
-	connections limit the angle a connected node can be at
-	node summary
-*/
-	public void ConnectNewNode(Node node, out Node newNode){
+	public void ConnectNewNode(DataNode node, out DataNode newNode)
+	{
 		//instantiate a new node
-		var newNodeObj = Instantiate(VariableManager.inst.NodePefab, node.transform.position, quaternion.identity);
-		newNode = newNodeObj.GetComponent<Node>();
+		newNode = new("", VariableManager.inst.GenerateId(), null);
 		ConnectNodes(node, newNode);
 	}
-	public void ConnectNodes(Node inputNode, Node outputNode, bool updateTypeLists = true){
-		inputNode.connectedNodes.Add(outputNode);
-		inputNode.connections.Add(NewConnection(outputNode));
+	public void ConnectNodes(DataNode fromNode, DataNode toNode, bool updateTypeLists = true)
+	{
+		fromNode.connectedNodes.Add(toNode);
+		fromNode.connectedNodeIds.Add(toNode.nodeId);
 		if (updateTypeLists) UpdateTypeLists();
 	}
-	public Connection NewConnection(Node outNode){
+	public Connection NewConnection(DataNode outNode)
+	{
 		var newConnetion = Instantiate(VariableManager.inst.ConnectionPrefab).GetComponent<Connection>();
 		newConnetion.outNode = outNode;
 		return newConnetion;
 	}
-	public void DisconnectNodes(Node inputNode, Node outputNode){
+	public void DisconnectNodes(DataNode inputNode, DataNode outputNode)
+	{
 		inputNode.connectedNodes.Remove(outputNode);
-		var connection = inputNode.connections.Find(x=>x.outNode == outputNode);
-		inputNode.connections.Remove(connection);
-		Destroy(connection.gameObject);
+		inputNode.connectedNodeIds.Remove(outputNode.nodeId);
 
 		UpdateTypeLists();
 	}
-	public Node GetNode(string nodePath, bool createIfDoesntExist, bool tryAddToNodesTypeLists){
-		Node newSelectedNode = GetAllNodes().ToList().Find(x=>x.nodePath == nodePath);
+	public DataNode GetNode(string nodePath, bool createIfDoesntExist, bool tryAddToNodesTypeLists)
+	{
+		DataNode newSelectedNode = GetAllNodes().ToList().Find(x=>x.nodePath == nodePath);
 			if (newSelectedNode == null && createIfDoesntExist)
-				newSelectedNode = NewNode(nodePath);
+				newSelectedNode = NewNode(VariableManager.inst.GenerateId(), null, nodePath);
 			if (tryAddToNodesTypeLists) TryAddToNodesTypeLists(new[]{newSelectedNode});
 		return newSelectedNode;
 	}
-	private void ManageConnections(){
-		foreach (var node in GetAllNodes().ToList().Select(x=>x)){
-			for (int i = 0; i < node.connectedNodes.Count; i++){
-				 
-				node.connections[i].line.SetPositions(new[]{node.transform.position, node.connectedNodes[i].transform.position});
-			}
-		}
-	}
-	public Node[] GetAllNodes(){
-		return GameObject.FindObjectsOfType<Node>();
+	
+	public DataNode[] GetAllNodes()
+	{
+		return GameObject.FindObjectsOfType<DataNode>();
 	}
 	#region Delete
-	/*public void DeleteConnection(Connection connection){
-
-		foreach (var typeList in connectionTypeLists)
-		{
-			typeList.connections.Remove(connection);
-		}
-		Destroy(connection.gameObject);
-	}*/
-	public void DeleteNode(Node node){
+	public void DeleteNode(DataNode node){
 		//Remove all in going connections
-		foreach (var refNode in GetAllNodes())
-		{
-			if (!refNode.connectedNodes.Contains(node)) continue;
-			refNode.connectedNodes.Remove(node);
-			refNode.connections.RemoveAll(x=>x.outNode == node);
+		foreach (var refNode in GetAllNodes().ToList().FindAll(x => x.connectedNodeIds.Exists(x => x == node.nodeId))) {
+			DisconnectNodes(refNode, node);
 		}
-
-		foreach (var connectedNode in node.connectedNodes)
-		{
+		//Remove all out going connections
+		foreach (var connectedNode in node.connectedNodes) {
 			DisconnectNodes(node, connectedNode);
 		}
-		//Manage typeLists
-		foreach (var typeList in nodeTypeLists)
-		{
-			typeList.nodes.Remove(node);
-		}
-		UpdateTypeLists();
-		//Destroy node
-		Destroy(node.gameObject);
 	}
-	# endregion
+	#endregion
 	#region TypeList
 	public void UpdateTypeLists(){
 		TryAddToNodesTypeLists(GetAllNodes(), nodeTypeLists.ToArray());
 	}
-	public List<NodeTypeList> TryAddToNodesTypeLists(Node[] nodes, NodeTypeList[] typeLists = null){
+	public List<NodeTypeList> TryAddToNodesTypeLists(DataNode[] nodes, NodeTypeList[] typeLists = null){
 		NodeTypeList[] listsToCheck;
 		if (typeLists == null) listsToCheck = nodeTypeLists.ToArray();
 		else listsToCheck = typeLists;
@@ -234,7 +134,7 @@ behaviour
 				} 
 				if (!typeList.nodes.Contains(node)) typeList.nodes.Add(node);
 
-				bool AreRequirementsMet(Node node, TypeListRequirement[] requirements){
+				bool AreRequirementsMet(DataNode node, TypeListRequirement[] requirements){
 					if (requirements == null) return true;
 					foreach (var requirement in requirements)
 					{
@@ -259,7 +159,7 @@ behaviour
             return regex.IsMatch(path);
 		}
 	}
-	public void SelectNodes(Node[] nodesToSelect){
+	public void SelectNodes(DataNode[] nodesToSelect){
 		foreach (var node in nodesToSelect){
 			if (node == null) continue;
 			//find the "selected" type list
@@ -295,7 +195,7 @@ behaviour
 			}
 		}
 	}
-	public void ConnectSelectedNodes(Node nodeToConnectTo, bool reverseConnect){
+	public void ConnectSelectedNodes(DataNode nodeToConnectTo, bool reverseConnect){
 		var selectedTypeList = nodeTypeLists.Find(x=>x.listPath == "selected.tlist");
 		if (selectedTypeList == null || selectedTypeList.nodes.Count == 0) return;
 		foreach (var selectedNode in selectedTypeList.nodes)
@@ -332,7 +232,5 @@ behaviour
 				nodeTypeLists.Add(connForceTypeList);
 			}
 	}
-	#endregion
+    #endregion
 }
-
-
