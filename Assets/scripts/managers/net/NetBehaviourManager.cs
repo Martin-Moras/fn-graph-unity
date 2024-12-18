@@ -31,7 +31,7 @@ public class NetBehaviourManager : I_Manager
 	{
 		//Create Saver-node
 		var saverNode = NetContentManager.inst.NewNode(saverNodeId, connectedNodes.Select(x => x.nodeId).ToList(), saverNodePath);
-		saverNodes_sp.Add(saverNode);
+		SpecialNodeManager.inst.saverNode_sp.connectedNodes.Add(saverNode);
 		return saverNode;
 	}
 	public void SelectNodes(List<DataNode> nodes)

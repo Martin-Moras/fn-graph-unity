@@ -3,11 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using UnityEngine;
 
 public class SpecialNodeManager : I_Manager
 {
 	public static SpecialNodeManager inst;
-	public Dictionary<uint, string> specialNodes;
+	public Dictionary<string, DataNode> specialNodes_dict;
+	public DataNode specialNode_sp;
 	public DataNode allNodes_sp;
 	public DataNode visible_sp;
 	public DataNode selected_sp;
@@ -21,29 +23,24 @@ public class SpecialNodeManager : I_Manager
 	}
     public override void Initialize()
     {
-        specialNodes = new() {
-			{1 , "AllNodes"},
-			{2 , "SaverNode"},
-			{3 , "Visable"},
-			{4 , "Selected"},
-			{5 , "Summerize"},
-			{6 , "Category"},
+        specialNodes_dict = new() {
+			{"All", allNodes_sp},
+			{"Saver", saverNode_sp},
+			{"Visable", visible_sp},
+			{"Selected", selected_sp},
+			{"Summerize", summerize_sp},
+			{"Category", category_sp},
 		};
+		//load special Nodes from a file
+		var loadedSaverNode = BackupManager.inst.LoadFile(VariableManager.inst.specialNodesSavePath);
 		
-		var loadedSpecialNodes = BackupManager.inst.LoadFile(VariableManager.inst.specialNodesSavePath).connectedNodes;
-		
-		if (loadedSpecialNodes == null) {
-			Debug.LogError($"special node save file is invalide");
-			return;
+		SetSpecialNodeVariables(loadedSaverNode, specialNodes_dict);
+		//Create special Node File if it doesn't exist 
+		if (loadedSaverNode == null) {
+			BackupManager.inst.SaveNode(specialNode_sp);
 		}
-
-		allNodes_sp = loadedSpecialNodes.Find(x=>x.nodePath == specialNodes[1]);
-		saverNode_sp = loadedSpecialNodes.Find(x=>x.nodePath == specialNodes[2]);
-		visible_sp = loadedSpecialNodes.Find(x=>x.nodePath == specialNodes[3]);
-		selected_sp = loadedSpecialNodes.Find(x=>x.nodePath == specialNodes[4]);
-		summerize_sp = loadedSpecialNodes.Find(x=>x.nodePath == specialNodes[5]);
-		category_sp = loadedSpecialNodes.Find(x=>x.nodePath == specialNodes[6]);
-
+		//add 
+		AddSaverNode(loadedSaverNode);
     }
 
 	public override void ManagerUpdate()
@@ -52,9 +49,22 @@ public class SpecialNodeManager : I_Manager
 	}
 	public void AddSaverNode(DataNode saverNode)
 	{
-		if (saverNode == null || saverNode == null) 
+		if (saverNode == null || saverNode_sp == null) 
 			return;
-		saverNode_sp.connectedNodes.Add(saverNode);
+		NetContentManager.inst.ConnectNodes(saverNode_sp, saverNode);
+	}
+	private void SetSpecialNodeVariables(DataNode specialSaverNode, Dictionary<string, DataNode> specialNodes_dict) 
+	{
+		if (specialSaverNode == null)
+			specialNode_sp = NetContentManager.inst.NewNode(VariableManager.inst.GenerateId(), null, VariableManager.inst.specialNodeName);
+		else
+			specialNode_sp = specialSaverNode;
+		foreach (var specialNodeKey in specialNodes_dict.Keys) {
+			specialNodes_dict[specialNodeKey] = specialNode_sp.connectedNodes.Find(x=>x.nodePath == specialNodeKey);
+			if (specialNodes_dict[specialNodeKey] == null)
+				specialNodes_dict[specialNodeKey] = NetContentManager.inst.NewNode(VariableManager.inst.GenerateId(), null, specialNodeKey);
+			NetContentManager.inst.ConnectNodes(specialNode_sp, specialNodes_dict[specialNodeKey]);
+		}
 	}
 }
 public enum PatternIdentifierNodes

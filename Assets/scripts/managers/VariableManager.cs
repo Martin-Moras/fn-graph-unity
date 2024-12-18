@@ -26,6 +26,9 @@ public class VariableManager : I_Manager
 	public string netSaveFileExtentionPattern = @"\.fnet$";
 	public string netSaveFileExtention = @".fnet";
 	#endregion Save/Load
+	#region Special nodes
+	public string specialNodeName = "Special node";
+	#endregion Special nodes
 	private uint lastGeneratedId;
 	#region Singleton
 	public static VariableManager inst { get; private set;}
@@ -40,7 +43,7 @@ public class VariableManager : I_Manager
 		SingletonizeThis();
 		rootPath = Application.dataPath;
 		netSavePath = Path.Combine(rootPath, "saved_nets");
-		specialNodesSavePath = Path.Combine(netSavePath, "special_nodes", netSaveFileExtention);
+		specialNodesSavePath = Path.Combine(netSavePath, specialNodeName, netSaveFileExtention);
 	}
 	public uint GenerateId()
 	{

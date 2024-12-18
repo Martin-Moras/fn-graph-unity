@@ -106,13 +106,19 @@ public class BackupManager : I_Manager
 			filePaths = GetFilePaths(saveFilePath, VariableManager.inst.netSaveFileExtention, maxFolderDepth);
 		//turn each file in "filePaths" into Saver-nodes and add them to "newSaverNodes"
 		foreach (var filePath in filePaths) {
-			newSaverNodes.Add(LoadFile(filePath));
+			newSaverNodes.Add(LoadFile(filePath, false));
 		}
 		//return all loaded Saver-nodes and from path and its subdirectories
 		return newSaverNodes;
     }
-	public DataNode LoadFile(string filePath)
+	public DataNode LoadFile(string filePath, bool checkPathValidity = true)
 	{
+		if (checkPathValidity) {
+			var pathType = GetPathType(filePath);
+			//return null if path is invalide
+			if (pathType != PathType.File)
+				return null;
+		}
 		var deserializedNodes = new List<DataNode>();
 		//get file contents from "filePath"
 		var fileContents = File.ReadAllText(filePath);

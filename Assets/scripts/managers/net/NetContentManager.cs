@@ -73,8 +73,10 @@ public class NetContentManager : I_Manager
 	}
 	public void ConnectNodes(DataNode fromNode, DataNode toNode, bool updateTypeLists = true)
 	{
-		fromNode.connectedNodes.Add(toNode);
-		fromNode.connectedNodeIds.Add(toNode.nodeId);
+		if (!fromNode.connectedNodes.Exists(x=>x == toNode))
+			fromNode.connectedNodes.Add(toNode);
+		if (!fromNode.connectedNodes.Exists(x=>x.nodeId == toNode.nodeId))
+			fromNode.connectedNodeIds.Add(toNode.nodeId);
 	}
 	public void DisconnectNodes(DataNode inputNode, DataNode outputNode)
 	{
@@ -82,7 +84,7 @@ public class NetContentManager : I_Manager
 		inputNode.connectedNodeIds.Remove(outputNode.nodeId);
 
 	}
-	public DataNode GetNode(string nodePath, bool createIfDoesntExist, bool tryAddToNodesTypeLists)
+	public DataNode GetNode(string nodePath, bool createIfDoesntExist)
 	{
 		DataNode newSelectedNode = GetAllNodes().ToList().Find(x=>x.nodePath == nodePath);
 			if (newSelectedNode == null && createIfDoesntExist)
@@ -92,7 +94,7 @@ public class NetContentManager : I_Manager
 	
 	public List<DataNode> GetAllNodes()
 	{
-		return NetBehaviourManager.inst.allNodes_sp.connectedNodes;
+		return SpecialNodeManager.inst.allNodes_sp.connectedNodes;
 	}
 	public void DeleteNode(DataNode node)
 	{
