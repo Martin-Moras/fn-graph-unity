@@ -7,7 +7,7 @@ using UnityEngine;
 public class Connection : MonoBehaviour
 {
     public LineRenderer line;
-    public DataNode outNode;
+    public VisualNode outNode;
     public void Initiallize() {
         line = GetComponent<LineRenderer>();
     }

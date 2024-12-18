@@ -5,8 +5,8 @@ using UnityEngine;
 public class VisualNode : MonoBehaviour
 {
     public DataNode dataNode { get; private set; }
-    public List<Connection> connections { get; set; } = new();
-    public SpriteRenderer rederer;
+    public List<Connection> connections { get; set; }
+    public SpriteRenderer sprite { get; private set; }
     public uint size;
     public void NodeConstructor(DataNode dataNode, List<Connection> connections){
         this.dataNode = dataNode;
@@ -16,9 +16,6 @@ public class VisualNode : MonoBehaviour
             this.connections = new();
         else 
             this.connections = connections;
-    }
-    void Awake(){
-        if(this.dataNode.nodePath == "" || this.dataNode.nodePath == null) 
-            this.dataNode.nodePath = UnityEngine.Random.Range(0, 500000).ToString();
+		sprite = GetComponent<SpriteRenderer>();
     }
 }

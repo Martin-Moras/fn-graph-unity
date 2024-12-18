@@ -55,7 +55,7 @@ public class NetBehaviourManager : I_Manager
 	}
 	private void AddNewNodesToAllNodes()
 	{
-		foreach (var newNode in NetContentManager.inst.newDataNodes) {
+		foreach (var newNode in NetContentManager.inst.thisFrame_newDataNodes) {
 			NetContentManager.inst.HandleNodeConnection(SpecialNodeManager.inst.allNodes_sp, newNode);
 		}
 	}

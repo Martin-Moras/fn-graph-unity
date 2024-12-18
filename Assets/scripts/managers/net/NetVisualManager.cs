@@ -1,9 +1,16 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class NetVisualManager : I_Manager
 {
+	public List<VisualNode> allVisualNodes = new();
+	public List<Connection> allConnections = new();
+	public List<VisualNode> thisFrame_newVisualNodes = new();
+	public List<VisualNode> thisFrame_DeletedVisualNodes = new();
+	public List<Connection> thisFrame_newConnections = new();
+	public List<Connection> thisFrame_DeletedConnections = new();
 	public float springStiffness;
 	//how long the spring should be
 	public float springRestLenght;
@@ -20,21 +27,90 @@ public class NetVisualManager : I_Manager
 	{
 	}
 	
-	void Update()
+	public override void ManagerUpdate()
 	{
+		VisualizeNewNodes();
 		ManageSprite();
 		ManageConnectionLine();
 	}
-	private void ManageSprite(){
-		foreach (var node in NetContentManager.inst.GetAllNodes()){
-			var renderer = node.GetComponent<SpriteRenderer>();
-			var selectedTList = NetContentManager.inst.nodeTypeLists.Find(x => x.listPath == "selected.tlist");
-			if (selectedTList != null && selectedTList.nodes.Contains(node)) 
-				renderer.color = Color.white;
-			else renderer.color = Color.red; 
+	private void VisualizeNewNodes()
+	{
+		VisualizeNodes(NetContentManager.inst.thisFrame_newDataNodes);
+	}	
+
+	private List<VisualNode> VisualizeNodes(List<DataNode> nodesToVisualize)
+	{
+		var newVisualNodes = CreateVisualNodes(nodesToVisualize);
+		ConnectNewVisualNodes(newVisualNodes);
+
+		return newVisualNodes;
+
+		List<VisualNode> CreateVisualNodes(List<DataNode> nodesToVisualize) 
+		{
+			float i = 0;
+			var newVisualNodes = new List<VisualNode>();
+			
+			foreach(var node in nodesToVisualize) {
+				var newVisualNode = DataNodeToVisualNode(node, Vector2.one * i / 3, false, false);
+
+				newVisualNodes.Add(newVisualNode);
+				thisFrame_newVisualNodes.Add(newVisualNode);
+				allVisualNodes.Add(newVisualNode);
+				i++;
+			}
+			return newVisualNodes;
+		}
+		void ConnectNewVisualNodes(List<VisualNode> visualNodeToConnect)
+		{
+			foreach (var newNode in newVisualNodes) {
+				ConnectOtherNodesTo(newNode);
+				ConnectToOtherNodes(newNode);
+			}
 		}
 	}
-	public Connection NewConnection(DataNode outNode)
+	private VisualNode DataNodeToVisualNode(DataNode dataNode, Vector2 pos, bool connectToOther, bool connectOtersToThis)
+	{
+		var visNode = Instantiate(VariableManager.inst.NodePrefab, (Vector3)pos, Quaternion.identity).GetComponent<VisualNode>();
+		visNode.NodeConstructor(dataNode, null);
+		if (connectToOther)
+			ConnectToOtherNodes(visNode);
+		if (connectOtersToThis)
+			ConnectOtherNodesTo(visNode);
+		return visNode;
+	}
+	private List<VisualNode> ConnectToOtherNodes(VisualNode node)
+	{
+		//Find all VisualNodes which node connects to
+		var outGoingConnectionVisualNodes = allVisualNodes.FindAll(x=>
+			node.connections.Exists(nodeConnection=>
+			nodeConnection.outNode.dataNode == x.dataNode));
+
+		foreach (var outGoingConnectionVisualNode in outGoingConnectionVisualNodes) {
+			HandleNodeConnection(node, outGoingConnectionVisualNode);
+		}
+		return outGoingConnectionVisualNodes;
+	}
+	private List<VisualNode> ConnectOtherNodesTo(VisualNode node)
+	{
+		//find all nodes that connect to node
+		var inGoingConnectionNodes = allVisualNodes.FindAll(x => x.dataNode.connectedNodes.Contains(node.dataNode));
+
+		foreach (var inGoingConnectionNode in inGoingConnectionNodes) {
+			HandleNodeConnection(inGoingConnectionNode, node);
+		}
+		return inGoingConnectionNodes;
+	}
+	private void ManageSprite(){
+		foreach (var node in allVisualNodes) {
+			node.sprite.color = Color.red;
+			// var renderer = node.GetComponent<SpriteRenderer>();
+			// var selectedTList = NetContentManager.inst.nodeTypeLists.Find(x => x.listPath == "selected.tlist");
+			// if (selectedTList != null && selectedTList.nodes.Contains(node)) 
+			// 	renderer.color = Color.white;
+			// else renderer.color = Color.red; 
+		}
+	}
+	public Connection NewConnection(VisualNode outNode)
 	{
 		var newConnetion = Instantiate(VariableManager.inst.ConnectionPrefab).GetComponent<Connection>();
 		newConnetion.outNode = outNode;
@@ -53,6 +129,31 @@ public class NetVisualManager : I_Manager
 			for (int i = 0; i < node.connectedNodes.Count; i++) {
 				node.connections[i].line.SetPositions(new[]{node.transform.position, node.connectedNodes[i].transform.position});
 			}
+		}
+	}
+	public Connection HandleNodeConnection(VisualNode fromNode, VisualNode toNode, ConnectType connectType = ConnectType.Connect)
+	{
+		switch (connectType) {
+			case ConnectType.Connect:
+				Connection newConnection = null;
+				if (!fromNode.connections.Exists(x=>x.outNode == toNode)) {
+					newConnection = NewConnection(toNode);
+					fromNode.connections.Add(newConnection);
+					thisFrame_newConnections.Add(newConnection);
+				}
+				return newConnection;
+			case ConnectType.Disconnect:
+				var connection = fromNode.connections.Find(x=>x.outNode == toNode);
+				fromNode.connections.Remove(connection);
+				thisFrame_DeletedConnections.Add(connection);
+				return connection;
+			case ConnectType.Toggle:
+				if (fromNode.connections.Exists(x=>x == toNode))
+					return HandleNodeConnection(fromNode, toNode, ConnectType.Disconnect);
+				else
+					return HandleNodeConnection(fromNode, toNode, ConnectType.Connect);
+			default:
+				return null;
 		}
 	}
 	
@@ -86,10 +187,5 @@ public class NetVisualManager : I_Manager
 				connectedNodeRb.AddForce(relativeNodePos.normalized * -springForce);
 			}
 		}
-	}
-
-	public override void ManagerUpdate()
-	{
-		throw new System.NotImplementedException();
 	}
 }

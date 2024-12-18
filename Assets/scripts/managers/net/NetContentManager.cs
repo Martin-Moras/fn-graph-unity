@@ -13,8 +13,9 @@ using Unity.VisualScripting;
 public class NetContentManager : I_Manager
 {
 	public string id;
-	public List<DataNode> newDataNodes = new();
-	public List<DataNode> deletedDataNodes = new();
+	public List<DataNode> thisFrame_newDataNodes = new();
+	public List<DataNode> thisFrame_deletedDataNodes = new();
+	public List<DataNode> thisFrame_changedNodes = new();
 	#region Singleton
 	
 	public static NetContentManager inst { get; private set;}
@@ -28,6 +29,11 @@ public class NetContentManager : I_Manager
 	public override void Initialize()
 	{
 	}
+
+	public override void ManagerUpdate()
+	{
+		FilterChangedNodes();
+	}
 	/// <summary>
 	/// creates a new node. 
 	/// </summary>
@@ -40,36 +46,31 @@ public class NetContentManager : I_Manager
 			nodePath = UnityEngine.Random.Range(0, int.MaxValue).ToString(); 
 		//create a new node
 		var newNode = new DataNode(nodePath, nodeId, connectedNodeIds);
-		newDataNodes.Add(newNode);
+		thisFrame_newDataNodes.Add(newNode);
 		SetConnectedDataNodesBasedOnConnectedNodeId(newNode);
 		return newNode;
 	}
 	public void SetConnectedDataNodesBasedOnConnectedNodeId(DataNode dataNode)
 	{
-		foreach (var currDataNode in GetAllNodes()) {
-			//find and connect all nodes to dataNode
-			foreach (var connectedNodeId in currDataNode.connectedNodeIds) {
-				if (dataNode.nodeId == connectedNodeId) {
-					if (!currDataNode.connectedNodes.Exists(x => x == dataNode)) {
-						currDataNode.connectedNodes.Add(dataNode);
-					}
-				}
-			}
-			//connect all nodes to dataNode
-			foreach (var connectedNodeId in dataNode.connectedNodeIds) {
-				if (currDataNode.nodeId == connectedNodeId) {
-					if (!dataNode.connectedNodes.Exists(x => x == currDataNode)) {
-						dataNode.connectedNodes.Add(currDataNode);
-					}
-				}
-			}
+		//loop through all nodes that connect to "dataNode"
+		foreach (var ingoingConnectedNode in GetAllNodes().FindAll(x=>x.connectedNodeIds.Contains(dataNode.nodeId))) {
+			//connect node which has the id of "dataNode" in its "connectedNodeIds"
+			HandleNodeConnection(ingoingConnectedNode, dataNode);
+		}
+		//connect dataNode to all nodes
+		foreach (var connectedNodeId in dataNode.connectedNodeIds) {
+			var outGoingConnectedNode = GetAllNodes().Find(x=>x.nodeId == connectedNodeId);
+			if (outGoingConnectedNode == null)
+				continue;
+			HandleNodeConnection(dataNode, outGoingConnectedNode);
 		}
 	}
-	public void ConnectNewNode(DataNode node, out DataNode newNode)
+	public DataNode ConnectNewNode(DataNode node)
 	{
 		//instantiate a new node
-		newNode = new("", VariableManager.inst.GenerateId(), null);
+		var newNode = new DataNode("", VariableManager.inst.GenerateId(), null);
 		HandleNodeConnection(node, newNode);
+		return newNode;
 	}
 	/// <summary>
 	/// By default connects "fromNode" to "toNode".
@@ -86,17 +87,33 @@ public class NetContentManager : I_Manager
 					fromNode.connectedNodes.Add(toNode);
 				if (!fromNode.connectedNodes.Exists(x=>x.nodeId == toNode.nodeId))
 					fromNode.connectedNodeIds.Add(toNode.nodeId);
+				thisFrame_changedNodes.Add(fromNode);
+				thisFrame_changedNodes.Add(toNode);
 				break;
 			case ConnectType.Disconnect:
 				fromNode.connectedNodes.Remove(toNode);
 				fromNode.connectedNodeIds.Remove(toNode.nodeId);
+				thisFrame_changedNodes.Add(fromNode);
+				thisFrame_changedNodes.Add(toNode);
 			break;
 			case ConnectType.Toggle:
 				if (fromNode.connectedNodes.Exists(x=>x == toNode))
 					HandleNodeConnection(fromNode, toNode, ConnectType.Disconnect);
 				else
-					HandleNodeConnection(fromNode, toNode, ConnectType.Disconnect);
+					HandleNodeConnection(fromNode, toNode, ConnectType.Connect);
 				break;
+		}
+	}
+	private void FilterChangedNodes()
+	{
+		//find all nodes that are in "changedNodes" and in ("newDataNodes" or "deletedDataNodes")
+		var nodesToRemove = thisFrame_changedNodes
+			.FindAll(changedNode => 
+				thisFrame_newDataNodes.Contains(changedNode) ||
+				thisFrame_deletedDataNodes.Contains(changedNode));
+		//delete all nodes from "changedNodes" which also ocurred in "newDataNodes" or "deletedDataNodes"
+		foreach (var node in nodesToRemove)	{
+			thisFrame_changedNodes.Remove(node);
 		}
 	}
 	public DataNode GetNode(string nodePath, bool createIfDoesntExist)
@@ -113,6 +130,7 @@ public class NetContentManager : I_Manager
 	}
 	public void DeleteNode(DataNode node)
 	{
+		thisFrame_deletedDataNodes.Add(node);
 		//Remove all in going connections
 		foreach (var refNode in GetAllNodes().ToList().FindAll(x => x.connectedNodeIds.Exists(x => x == node.nodeId))) {
 			HandleNodeConnection(refNode, node, ConnectType.Disconnect);
@@ -121,7 +139,6 @@ public class NetContentManager : I_Manager
 		foreach (var connectedNode in node.connectedNodes) {
 			HandleNodeConnection(node, connectedNode, ConnectType.Disconnect);
 		}
-		deletedDataNodes.Add(node);
 	}
 	public void ConnectSelectedNodes(DataNode nodeToConnectTo, ConnectType connectType, bool reverseConnect){
 		var selectedTypeList = SpecialNodeManager.inst.selected_sp;
@@ -136,10 +153,10 @@ public class NetContentManager : I_Manager
 				HandleNodeConnection(selectedNode, nodeToConnectTo, connectType);
 		}
 	}
-
-	public override void ManagerUpdate()
+	public void RenameNode(DataNode node, string path)
 	{
-		throw new NotImplementedException();
+		node.SetPath(path);
+		thisFrame_changedNodes.Add(node);
 	}
 }
 public enum ConnectType {

@@ -45,31 +45,32 @@ public class GameManager : MonoBehaviour
 	}
 	void Update()
 	{
-		netBehaviourManager.ManagerUpdate();
 		netInteractionManager.ManageInputs();
-		variableManager.ManagerUpdate();
 		netContentManager.ManagerUpdate();
+		netBehaviourManager.ManagerUpdate();
 		netVisualManager.ManagerUpdate();
 		specialNodeManager.ManagerUpdate();
+		variableManager.ManagerUpdate();
 		/*
 		!variables
 			x-nodes created this frame
 			x-nodes deleted this frame
 			-nodes shown this frame
-			-nodes hidden this framöe
-			- GameManager should clear all those 
+			-nodes hidden this frame
+			x - GameManager should clear all those 
 				at the begining of the frame
 		Visuals:
-			get all data nodes
-			turn them into Visual nodes
-			add them to the allVisualNodes list
+			x get all data nodes
+			x turn them into Visual nodes
+			x add them to the allVisualNodes list
+			connect visual nodes
 
 		load
 			x create new data nodes
 			x add them to a list called newDataNodes
 			x connect them to existing nodes
 			x add them to all nodes -----------------------¬
-			turn them into visual nodes					 |
+			x turn them into visual nodes					 |
 														 |
 		special nodes <-----------------------------------
 			x Make shure all SpecialNodes are existent
@@ -85,8 +86,12 @@ public class GameManager : MonoBehaviour
 	}
 	private void ClearPerFrameLists()
 	{
-		netContentManager.newDataNodes.Clear();
-		netContentManager.deletedDataNodes.Clear();
+		netContentManager.thisFrame_newDataNodes.Clear();
+		netContentManager.thisFrame_deletedDataNodes.Clear();
+		netVisualManager.thisFrame_DeletedConnections.Clear();
+		netVisualManager.thisFrame_DeletedVisualNodes.Clear();
+		netVisualManager.thisFrame_newConnections.Clear();
+		netVisualManager.thisFrame_newVisualNodes.Clear();
 
 	}
 }
