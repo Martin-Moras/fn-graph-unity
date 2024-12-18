@@ -13,20 +13,20 @@ using Unity.VisualScripting;
 public class NetContentManager : I_Manager
 {
 	public string id;
-	public List<NodeTypeList> nodeTypeLists = new();
+	public List<DataNode> newDataNodes = new();
+	public List<DataNode> deletedDataNodes = new();
 	#region Singleton
 	
 	public static NetContentManager inst { get; private set;}
-	void SingletonizeThis()
+	public override void SingletonizeThis()
 	{
 		if (inst != null && inst != this) Destroy(this);
 		else inst = this;
 	}
 	#endregion
 	
-	public override void Initiallize()
+	public override void Initialize()
 	{
-		SingletonizeThis();
 	}
 	/// <summary>
 	/// creates a new node. 
@@ -40,6 +40,7 @@ public class NetContentManager : I_Manager
 			nodePath = UnityEngine.Random.Range(0, int.MaxValue).ToString(); 
 		//create a new node
 		var newNode = new DataNode(nodePath, nodeId, connectedNodeIds);
+		newDataNodes.Add(newNode);
 		SetConnectedDataNodesBasedOnConnectedNodeId(newNode);
 		return newNode;
 	}
@@ -74,36 +75,27 @@ public class NetContentManager : I_Manager
 	{
 		fromNode.connectedNodes.Add(toNode);
 		fromNode.connectedNodeIds.Add(toNode.nodeId);
-		if (updateTypeLists) UpdateTypeLists();
-	}
-	public Connection NewConnection(DataNode outNode)
-	{
-		var newConnetion = Instantiate(VariableManager.inst.ConnectionPrefab).GetComponent<Connection>();
-		newConnetion.outNode = outNode;
-		return newConnetion;
 	}
 	public void DisconnectNodes(DataNode inputNode, DataNode outputNode)
 	{
 		inputNode.connectedNodes.Remove(outputNode);
 		inputNode.connectedNodeIds.Remove(outputNode.nodeId);
 
-		UpdateTypeLists();
 	}
 	public DataNode GetNode(string nodePath, bool createIfDoesntExist, bool tryAddToNodesTypeLists)
 	{
 		DataNode newSelectedNode = GetAllNodes().ToList().Find(x=>x.nodePath == nodePath);
 			if (newSelectedNode == null && createIfDoesntExist)
 				newSelectedNode = NewNode(VariableManager.inst.GenerateId(), null, nodePath);
-			if (tryAddToNodesTypeLists) TryAddToNodesTypeLists(new[]{newSelectedNode});
 		return newSelectedNode;
 	}
 	
-	public DataNode[] GetAllNodes()
+	public List<DataNode> GetAllNodes()
 	{
-		return GameObject.FindObjectsOfType<DataNode>();
+		return NetBehaviourManager.inst.allNodes_sp.connectedNodes;
 	}
-	#region Delete
-	public void DeleteNode(DataNode node){
+	public void DeleteNode(DataNode node)
+	{
 		//Remove all in going connections
 		foreach (var refNode in GetAllNodes().ToList().FindAll(x => x.connectedNodeIds.Exists(x => x == node.nodeId))) {
 			DisconnectNodes(refNode, node);
@@ -112,125 +104,25 @@ public class NetContentManager : I_Manager
 		foreach (var connectedNode in node.connectedNodes) {
 			DisconnectNodes(node, connectedNode);
 		}
-	}
-	#endregion
-	#region TypeList
-	public void UpdateTypeLists(){
-		TryAddToNodesTypeLists(GetAllNodes(), nodeTypeLists.ToArray());
-	}
-	public List<NodeTypeList> TryAddToNodesTypeLists(DataNode[] nodes, NodeTypeList[] typeLists = null){
-		NodeTypeList[] listsToCheck;
-		if (typeLists == null) listsToCheck = nodeTypeLists.ToArray();
-		else listsToCheck = typeLists;
-		var outTypeLists = new List<NodeTypeList>();
-
-		foreach (var typeList in listsToCheck)
-		{
-			foreach (var node in nodes)
-			{
-				if (!AreRequirementsMet(node, typeList.requirements)){
-					typeList.nodes.Remove(node);
-					continue;
-				} 
-				if (!typeList.nodes.Contains(node)) typeList.nodes.Add(node);
-
-				bool AreRequirementsMet(DataNode node, TypeListRequirement[] requirements){
-					if (requirements == null) return true;
-					foreach (var requirement in requirements)
-					{
-						if (!PathMatches(node.nodePath, requirement.path)) return false;
-						if (node.connectedNodes.Count < requirement.connectedNodeRequirements.Length) return false;
-						foreach (var connectedNode in node.connectedNodes)
-						{
-							if (!AreRequirementsMet(connectedNode, requirement.connectedNodeRequirements)) return false;
-						}
-					}
-					//if requirements are met
-					return true;
-				}
-
-			}
-		}
-		return outTypeLists;
-
-		bool PathMatches(string path, string filter){
-			var regex = new Regex(filter, RegexOptions.None);
-			//if (string.IsNullOrEmpty(filter)) return false;
-            return regex.IsMatch(path);
-		}
-	}
-	public void SelectNodes(DataNode[] nodesToSelect){
-		foreach (var node in nodesToSelect){
-			if (node == null) continue;
-			//find the "selected" type list
-			var selectedTypeList = nodeTypeLists.Find(x=>x.listPath == "selected.tlist");
-			//Create selected.tlist if it doesn't exist
-			if (selectedTypeList == null){
-				selectedTypeList = new(
-					"selected.tlist", 
-					null, 
-					Color.clear, 
-					new TypeListRequirement[] {
-						new TypeListRequirement(
-							"",
-							new TypeListRequirement[]{
-								new TypeListRequirement(
-									"identifiers/selected.node",
-									null
-								)
-							}
-						)
-					});
-				nodeTypeLists.Add(selectedTypeList);
-			}
-			//if node has an identifier called "selected" remove it else add it
-			var selectedNode = GetNode("identifiers/selected.node", true, true);
-			if (!node.connectedNodes.Contains(selectedNode)){
-				ConnectNodes(node, selectedNode);
-				TryAddToNodesTypeLists(new[]{node});
-			}
-			else{
-				DisconnectNodes(node, selectedNode);
-				TryAddToNodesTypeLists(new[]{node});
-			}
-		}
+		deletedDataNodes.Add(node);
 	}
 	public void ConnectSelectedNodes(DataNode nodeToConnectTo, bool reverseConnect){
-		var selectedTypeList = nodeTypeLists.Find(x=>x.listPath == "selected.tlist");
-		if (selectedTypeList == null || selectedTypeList.nodes.Count == 0) return;
-		foreach (var selectedNode in selectedTypeList.nodes)
+		var selectedTypeList = NetBehaviourManager.inst.selected_sp;
+		if (selectedTypeList == null || 
+			selectedTypeList.connectedNodes == null || 
+			selectedTypeList.connectedNodes.Count == 0) 
+			return;
+		foreach (var selectedNode in selectedTypeList.connectedNodes)
 		{
-			if (reverseConnect) ConnectNodes(nodeToConnectTo, selectedNode, false);
-			else ConnectNodes(selectedNode, nodeToConnectTo, false);
+			if (reverseConnect) 
+				ConnectNodes(nodeToConnectTo, selectedNode, false);
+			else 
+				ConnectNodes(selectedNode, nodeToConnectTo, false);
 		}
-		UpdateTypeLists();
 	}
-	public void ManageConnectionForcesTList(){
-		var connForceTypeList = nodeTypeLists.Find(x=>x.listPath == "connection-force.tlist");
-			//Create selected.tlist if it doesn't exist
-			if (connForceTypeList == null){
-				connForceTypeList = new(
-					"connection-force.tlist", 
-					null, 
-					Color.clear, 
-					new TypeListRequirement[] {
-						new TypeListRequirement(
-							"",
-							new TypeListRequirement[]{
-								new TypeListRequirement(
-									"",
-									new TypeListRequirement[]{
-										new TypeListRequirement(
-											"identifier/connection-force.node",
-											null
-										)
-									}
-								)
-							}
-						)
-					});
-				nodeTypeLists.Add(connForceTypeList);
-			}
+
+	public override void ManagerUpdate()
+	{
+		throw new NotImplementedException();
 	}
-    #endregion
 }

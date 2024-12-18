@@ -6,28 +6,41 @@ using Unity.Mathematics;
 using UnityEditor;
 using UnityEngine;
 using System.Text.RegularExpressions;
+using UnityEditor.Experimental.GraphView;
 
 
 public class NetBehaviourManager : I_Manager
 {
-	public DataNode allNodes_sp;
-	public DataNode visible_sp;
-	public DataNode selected_sp;
-	public DataNode summerize_sp;
-	public DataNode category_sp;
-	public List<DataNode> saverNodes_sp;
 	#region Singleton
 	public static NetBehaviourManager inst { get; private set;}
-	void SingletonizeThis()
+	public override void SingletonizeThis()
 	{
 		if (inst != null && inst != this) Destroy(this);
 		else inst = this;
 	}
 	#endregion
 	
-	public override void Initiallize()
+	public override void Initialize()
 	{
-		SingletonizeThis();
 	}
-
+	public override void ManagerUpdate()
+	{
+		
+	}
+	public DataNode NewSaverNode(uint saverNodeId, List<DataNode> connectedNodes, string saverNodePath)
+	{
+		//Create Saver-node
+		var saverNode = NetContentManager.inst.NewNode(saverNodeId, connectedNodes.Select(x => x.nodeId).ToList(), saverNodePath);
+		saverNodes_sp.Add(saverNode);
+		return saverNode;
+	}
+	public void SelectNodes(List<DataNode> nodes)
+	{
+		foreach (var node in nodes)
+			SelectNode(node);
+	}
+	public void SelectNode(DataNode node)
+	{
+		NetContentManager.inst.ConnectNodes(selected_sp, node);
+	}
 }

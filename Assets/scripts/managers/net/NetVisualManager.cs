@@ -10,15 +10,14 @@ public class NetVisualManager : I_Manager
 	public float springDamping;
 	#region Singleton
 	public static NetVisualManager inst { get; private set;}
-	void SingletonizeThis()
+	public override void SingletonizeThis()
 	{
 		if (inst != null && inst != this) Destroy(this);
 		else inst = this;
 	}
 	#endregion
-	public override void Initiallize()
+	public override void Initialize()
 	{
-		SingletonizeThis();
 	}
 	
 	void Update()
@@ -34,6 +33,12 @@ public class NetVisualManager : I_Manager
 				renderer.color = Color.white;
 			else renderer.color = Color.red; 
 		}
+	}
+	public Connection NewConnection(DataNode outNode)
+	{
+		var newConnetion = Instantiate(VariableManager.inst.ConnectionPrefab).GetComponent<Connection>();
+		newConnetion.outNode = outNode;
+		return newConnetion;
 	}
 	private void ManageConnectionLine(){
 		foreach (var node in NetContentManager.inst.GetAllNodes()){
@@ -81,5 +86,10 @@ public class NetVisualManager : I_Manager
 				connectedNodeRb.AddForce(relativeNodePos.normalized * -springForce);
 			}
 		}
+	}
+
+	public override void ManagerUpdate()
+	{
+		throw new System.NotImplementedException();
 	}
 }

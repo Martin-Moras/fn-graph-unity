@@ -1,5 +1,6 @@
 using System.Collections;
 using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using MathNet.Numerics.Providers.FourierTransform;
@@ -19,28 +20,27 @@ public class VariableManager : I_Manager
 	#endregion Camera
 	#region Save/Load
 	public string rootPath {get; private set;}
-	public string netSavePath = "saved_nets";
-	public string nodeSavePath;
-	public string typeListSavePath;
-	public string saveFileSeperatorStr;
-	#endregion Save/Load
-	#region string pattern
+	public string netSavePath;
+	public string specialNodesSavePath;
+	public char[] saveFileSeperatorStr = new[] {';'};
 	public string netSaveFileExtentionPattern = @"\.fnet$";
 	public string netSaveFileExtention = @".fnet";
-	#endregion string pattern
+	#endregion Save/Load
 	private uint lastGeneratedId;
 	#region Singleton
 	public static VariableManager inst { get; private set;}
-	private void SingletonizeThis()
+	public override void SingletonizeThis()
 	{
 		if (inst != null && inst != this) Destroy(this);
 		else inst = this;
 	}
 	#endregion Singleton
-	public override void Initiallize()
+	public override void Initialize()
 	{
 		SingletonizeThis();
 		rootPath = Application.dataPath;
+		netSavePath = Path.Combine(rootPath, "saved_nets");
+		specialNodesSavePath = Path.Combine(netSavePath, "special_nodes", netSaveFileExtention);
 	}
 	public uint GenerateId()
 	{
@@ -56,5 +56,10 @@ public class VariableManager : I_Manager
 			generatedId = lastGeneratedId + 1;
 		lastGeneratedId = generatedId;
         return generatedId;
+	}
+
+	public override void ManagerUpdate()
+	{
+		throw new NotImplementedException();
 	}
 }

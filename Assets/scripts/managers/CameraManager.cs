@@ -3,21 +3,15 @@ using UnityEngine.Scripting.APIUpdating;
 public class CameraManager : I_Manager {
     #region Singleton
     public static CameraManager inst { get; private set;}
-    void SingletonizeThis()
+    public override void SingletonizeThis()
     {
         if (inst != null && inst != this) Destroy(this);
         else inst = this;
     }
-    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
-    static void OnRuntimeMethodLoad()
-    {
-		inst = FindObjectOfType<CameraManager>();
-	}
     #endregion
     public Camera mainCamera;
-	public override void Initiallize()
+	public override void Initialize()
     {
-        SingletonizeThis();
     }
     private void Start() {
         mainCamera = GetComponent<Camera>();
@@ -42,8 +36,8 @@ public class CameraManager : I_Manager {
             mainCamera.orthographicSize += sizeChange;
     }
 
-    public override void Initiallize()
-    {
-        throw new System.NotImplementedException();
-    }
+	public override void ManagerUpdate()
+	{
+		throw new System.NotImplementedException();
+	}
 }

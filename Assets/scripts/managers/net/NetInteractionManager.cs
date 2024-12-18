@@ -18,20 +18,14 @@ public class NetInteractionManager : I_Manager
     #endregion
     #region Singleton
     public static NetInteractionManager inst { get; private set;}
-    void SingletonizeThis()
+    public override void SingletonizeThis()
     {
         if (inst != null && inst != this) Destroy(this);
         else inst = this;
     }
-    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
-    static void OnRuntimeMethodLoad()
-    {
-		inst = FindObjectOfType<NetInteractionManager>();
-	}
     #endregion
-	public override void Initiallize()
+	public override void Initialize()
     {
-        SingletonizeThis();
         mainInput = new();
         //Add node
         //mainInput.mainScene.NewNode.started += context => onNewNode();
@@ -40,19 +34,23 @@ public class NetInteractionManager : I_Manager
     }
 
     public void ManageInputs(){
-        if (mainInput.mainScene.NewNode.triggered) NetContentManager.inst.NewNode();
+        if (mainInput.mainScene.NewNode.triggered) NetContentManager.inst.NewNode(VariableManager.inst.GenerateId(), null, "unnamed");
         // if (mainInput.mainScene.ConnectSelectedNodes.triggered) NetManager.inst.ConnectSelectedNodes();
         // if (mainInput.mainScene.NewChildNode.triggered) NetManager.inst.NewChildNode();
-        if (mainInput.mainScene.Load.triggered) BackupManager.inst.Load();
-        if (mainInput.mainScene.Save.triggered) {
+		//Load all
+        if (mainInput.mainScene.Load.triggered) BackupManager.inst.LoadDirectory(VariableManager.inst.netSavePath);
+		//Save all
+        if (mainInput.mainScene.Save.triggered)
             BackupManager.inst.SaveNodes(NetContentManager.inst.GetAllNodes().ToList());
-        }
+		//Connect to selected nodes
         if (mainInput.mainScene.ConnectToSelectedNodes.triggered) 
             NetContentManager.inst.ConnectSelectedNodes(GetNodeUnderCursor(), true);
-        else if (mainInput.mainScene.ConnectSelectedNodes.triggered) 
+		//Connect selected nodes
+        if (mainInput.mainScene.ConnectSelectedNodes.triggered) 
             NetContentManager.inst.ConnectSelectedNodes(GetNodeUnderCursor(), false);
-        else if (mainInput.mainScene.Select.triggered) 
-            NetContentManager.inst.SelectNodes(new DataNode[]{GetNodeUnderCursor()});
+		//Select Node under Cursor
+        if (mainInput.mainScene.Select.triggered) 
+            NetBehaviourManager.inst.SelectNodes(new DataNode[]{GetNodeUnderCursor()});
         //Camera
         moveCamera = mainInput.mainScene.MoveCamera.ReadValue<Vector2>();
         changeCameraSize = MathF.Sign(mainInput.mainScene.ChangeCameraSize.ReadValue<float>());
@@ -82,10 +80,18 @@ public class NetInteractionManager : I_Manager
 	private void DropNode(){
 	
 	}
+	public void SelectNodes(DataNode[] nodesToSelect){
+		
+	}
     private void OnEnable(){
         mainInput.Enable();
     }
     private void OnDisable(){
         mainInput.Disable();
     }
+
+	public override void ManagerUpdate()
+	{
+		throw new NotImplementedException();
+	}
 }

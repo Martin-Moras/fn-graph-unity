@@ -9,6 +9,7 @@ public class GameManager : MonoBehaviour
 	public NetInteractionManager netInteractionManager;
 	public NetVisualManager netVisualManager;
 	public SpecialNodeManager specialNodeManager;
+	public VariableManager variableManager;
 	#region Singleton
 	public static GameManager inst { get; private set;}
 	void SingletonizeThis()
@@ -20,28 +21,42 @@ public class GameManager : MonoBehaviour
 	private void Awake() {
 		SingletonizeThis();
 
+		variableManager = GetComponent<VariableManager>();
 		netBehaviourManager = GetComponent<NetBehaviourManager>();
 		netContentManager = GetComponent<NetContentManager>();
 		netInteractionManager = GetComponent<NetInteractionManager>();
 		netVisualManager = GetComponent<NetVisualManager>();
 		specialNodeManager = GetComponent<SpecialNodeManager>();
 
-		netBehaviourManager.Initiallize();
-		netContentManager.Initiallize();
-		netInteractionManager.Initiallize();
-		netVisualManager.Initiallize();
-		specialNodeManager.Initiallize();
+		variableManager.SingletonizeThis();
+		netBehaviourManager.SingletonizeThis();
+		netContentManager.SingletonizeThis();
+		netInteractionManager.SingletonizeThis();
+		netVisualManager.SingletonizeThis();
+		specialNodeManager.SingletonizeThis();
+		
+		variableManager.Initialize();
+		netBehaviourManager.Initialize();
+		netContentManager.Initialize();
+		netInteractionManager.Initialize();
+		netVisualManager.Initialize();
+		specialNodeManager.Initialize();
 
 	}
 	void Update()
 	{
-		netInteractionManager.ManageInputs();
+		variableManager.ManagerUpdate();
+		netBehaviourManager.ManagerUpdate();
+		netContentManager.ManagerUpdate();
+		netInteractionManager.ManagerUpdate();
+		netVisualManager.ManagerUpdate();
+		specialNodeManager.ManagerUpdate();
 		/*
 		!variables
-			-nodes created this frame
-			-nodes deleted this frame
+			x-nodes created this frame
+			x-nodes deleted this frame
 			-nodes shown this frame
-			-nodes hidden this frame
+			-nodes hidden this framöe
 			- GameManager should clear all those 
 				at the begining of the frame
 		Visuals:
@@ -51,8 +66,8 @@ public class GameManager : MonoBehaviour
 
 		load
 			x create new data nodes
-			add them to a list called newDataNodes
-			connect them to existing nodes
+			x add them to a list called newDataNodes
+			x connect them to existing nodes
 			add them to all nodes -----------------------¬
 			turn them into visual nodes					 |
 														 |
@@ -60,5 +75,12 @@ public class GameManager : MonoBehaviour
 			Make shure all SpecialNodes are existent
 			Code behaviour for special nodes
 		*/
+		ClearPerFrameLists();
+	}
+	private void ClearPerFrameLists()
+	{
+		netContentManager.newDataNodes.Clear();
+		netContentManager.deletedDataNodes.Clear();
+
 	}
 }
