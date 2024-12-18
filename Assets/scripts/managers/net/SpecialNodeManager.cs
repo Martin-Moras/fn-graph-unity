@@ -51,7 +51,7 @@ public class SpecialNodeManager : I_Manager
 	{
 		if (saverNode == null || saverNode_sp == null) 
 			return;
-		NetContentManager.inst.ConnectNodes(saverNode_sp, saverNode);
+		NetContentManager.inst.HandleNodeConnection(saverNode_sp, saverNode);
 	}
 	private void SetSpecialNodeVariables(DataNode specialSaverNode, Dictionary<string, DataNode> specialNodes_dict) 
 	{
@@ -63,7 +63,7 @@ public class SpecialNodeManager : I_Manager
 			specialNodes_dict[specialNodeKey] = specialNode_sp.connectedNodes.Find(x=>x.nodePath == specialNodeKey);
 			if (specialNodes_dict[specialNodeKey] == null)
 				specialNodes_dict[specialNodeKey] = NetContentManager.inst.NewNode(VariableManager.inst.GenerateId(), null, specialNodeKey);
-			NetContentManager.inst.ConnectNodes(specialNode_sp, specialNodes_dict[specialNodeKey]);
+			NetContentManager.inst.HandleNodeConnection(specialNode_sp, specialNodes_dict[specialNodeKey]);
 		}
 	}
 }

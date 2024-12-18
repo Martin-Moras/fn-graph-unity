@@ -69,20 +69,35 @@ public class NetContentManager : I_Manager
 	{
 		//instantiate a new node
 		newNode = new("", VariableManager.inst.GenerateId(), null);
-		ConnectNodes(node, newNode);
+		HandleNodeConnection(node, newNode);
 	}
-	public void ConnectNodes(DataNode fromNode, DataNode toNode, bool updateTypeLists = true)
+	/// <summary>
+	/// By default connects "fromNode" to "toNode".
+	/// If there is allready a connection between the two nodes it doesn't add another one
+	/// </summary>
+	/// <param name="fromNode"></param>
+	/// <param name="toNode"></param>
+	/// <param name="connectType"></param>
+	public void HandleNodeConnection(DataNode fromNode, DataNode toNode, ConnectType connectType = ConnectType.Connect)
 	{
-		if (!fromNode.connectedNodes.Exists(x=>x == toNode))
-			fromNode.connectedNodes.Add(toNode);
-		if (!fromNode.connectedNodes.Exists(x=>x.nodeId == toNode.nodeId))
-			fromNode.connectedNodeIds.Add(toNode.nodeId);
-	}
-	public void DisconnectNodes(DataNode inputNode, DataNode outputNode)
-	{
-		inputNode.connectedNodes.Remove(outputNode);
-		inputNode.connectedNodeIds.Remove(outputNode.nodeId);
-
+		switch (connectType) {
+			case ConnectType.Connect:
+				if (!fromNode.connectedNodes.Exists(x=>x == toNode))
+					fromNode.connectedNodes.Add(toNode);
+				if (!fromNode.connectedNodes.Exists(x=>x.nodeId == toNode.nodeId))
+					fromNode.connectedNodeIds.Add(toNode.nodeId);
+				break;
+			case ConnectType.Disconnect:
+				fromNode.connectedNodes.Remove(toNode);
+				fromNode.connectedNodeIds.Remove(toNode.nodeId);
+			break;
+			case ConnectType.Toggle:
+				if (fromNode.connectedNodes.Exists(x=>x == toNode))
+					HandleNodeConnection(fromNode, toNode, ConnectType.Disconnect);
+				else
+					HandleNodeConnection(fromNode, toNode, ConnectType.Disconnect);
+				break;
+		}
 	}
 	public DataNode GetNode(string nodePath, bool createIfDoesntExist)
 	{
@@ -100,26 +115,25 @@ public class NetContentManager : I_Manager
 	{
 		//Remove all in going connections
 		foreach (var refNode in GetAllNodes().ToList().FindAll(x => x.connectedNodeIds.Exists(x => x == node.nodeId))) {
-			DisconnectNodes(refNode, node);
+			HandleNodeConnection(refNode, node, ConnectType.Disconnect);
 		}
 		//Remove all out going connections
 		foreach (var connectedNode in node.connectedNodes) {
-			DisconnectNodes(node, connectedNode);
+			HandleNodeConnection(node, connectedNode, ConnectType.Disconnect);
 		}
 		deletedDataNodes.Add(node);
 	}
-	public void ConnectSelectedNodes(DataNode nodeToConnectTo, bool reverseConnect){
-		var selectedTypeList = NetBehaviourManager.inst.selected_sp;
+	public void ConnectSelectedNodes(DataNode nodeToConnectTo, ConnectType connectType, bool reverseConnect){
+		var selectedTypeList = SpecialNodeManager.inst.selected_sp;
 		if (selectedTypeList == null || 
-			selectedTypeList.connectedNodes == null || 
-			selectedTypeList.connectedNodes.Count == 0) 
+			selectedTypeList.connectedNodes == null) 
 			return;
 		foreach (var selectedNode in selectedTypeList.connectedNodes)
 		{
 			if (reverseConnect) 
-				ConnectNodes(nodeToConnectTo, selectedNode, false);
+				HandleNodeConnection(nodeToConnectTo, selectedNode, connectType);
 			else 
-				ConnectNodes(selectedNode, nodeToConnectTo, false);
+				HandleNodeConnection(selectedNode, nodeToConnectTo, connectType);
 		}
 	}
 
@@ -127,4 +141,9 @@ public class NetContentManager : I_Manager
 	{
 		throw new NotImplementedException();
 	}
+}
+public enum ConnectType {
+	Connect,
+	Disconnect,
+	Toggle,
 }

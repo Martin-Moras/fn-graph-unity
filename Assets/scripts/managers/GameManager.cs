@@ -45,10 +45,10 @@ public class GameManager : MonoBehaviour
 	}
 	void Update()
 	{
-		variableManager.ManagerUpdate();
 		netBehaviourManager.ManagerUpdate();
+		netInteractionManager.ManageInputs();
+		variableManager.ManagerUpdate();
 		netContentManager.ManagerUpdate();
-		netInteractionManager.ManagerUpdate();
 		netVisualManager.ManagerUpdate();
 		specialNodeManager.ManagerUpdate();
 		/*
@@ -68,12 +68,18 @@ public class GameManager : MonoBehaviour
 			x create new data nodes
 			x add them to a list called newDataNodes
 			x connect them to existing nodes
-			add them to all nodes -----------------------¬
+			x add them to all nodes -----------------------¬
 			turn them into visual nodes					 |
 														 |
 		special nodes <-----------------------------------
-			Make shure all SpecialNodes are existent
+			x Make shure all SpecialNodes are existent
 			Code behaviour for special nodes
+				x All
+				x Saver
+				x Selected
+				Visable
+				Summerize
+				Category
 		*/
 		ClearPerFrameLists();
 	}

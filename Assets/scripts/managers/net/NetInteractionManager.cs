@@ -44,13 +44,13 @@ public class NetInteractionManager : I_Manager
             BackupManager.inst.SaveNodes(NetContentManager.inst.GetAllNodes().ToList());
 		//Connect to selected nodes
         if (mainInput.mainScene.ConnectToSelectedNodes.triggered) 
-            NetContentManager.inst.ConnectSelectedNodes(GetNodeUnderCursor(), true);
+            NetContentManager.inst.ConnectSelectedNodes(GetNodeUnderCursor(), ConnectType.Connect, true);
 		//Connect selected nodes
         if (mainInput.mainScene.ConnectSelectedNodes.triggered) 
-            NetContentManager.inst.ConnectSelectedNodes(GetNodeUnderCursor(), false);
+            NetContentManager.inst.ConnectSelectedNodes(GetNodeUnderCursor(), ConnectType.Connect, false);
 		//Select Node under Cursor
         if (mainInput.mainScene.Select.triggered) 
-            NetBehaviourManager.inst.SelectNodes(new DataNode[]{GetNodeUnderCursor()});
+            NetBehaviourManager.inst.SelectNode(GetNodeUnderCursor(), SelectAction.Toggle);
         //Camera
         moveCamera = mainInput.mainScene.MoveCamera.ReadValue<Vector2>();
         changeCameraSize = MathF.Sign(mainInput.mainScene.ChangeCameraSize.ReadValue<float>());

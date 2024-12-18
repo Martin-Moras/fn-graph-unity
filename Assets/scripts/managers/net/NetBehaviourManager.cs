@@ -25,7 +25,7 @@ public class NetBehaviourManager : I_Manager
 	}
 	public override void ManagerUpdate()
 	{
-		
+		AddNewNodesToAllNodes();
 	}
 	public DataNode NewSaverNode(uint saverNodeId, List<DataNode> connectedNodes, string saverNodePath)
 	{
@@ -34,13 +34,34 @@ public class NetBehaviourManager : I_Manager
 		SpecialNodeManager.inst.saverNode_sp.connectedNodes.Add(saverNode);
 		return saverNode;
 	}
-	public void SelectNodes(List<DataNode> nodes)
+	public void SelectNodes(List<DataNode> nodes, SelectAction selectAction)
 	{
 		foreach (var node in nodes)
-			SelectNode(node);
+			SelectNode(node, selectAction);
 	}
-	public void SelectNode(DataNode node)
+	public void SelectNode(DataNode node, SelectAction selectAction)
 	{
-		NetContentManager.inst.ConnectNodes(selected_sp, node);
+		switch (selectAction){
+			case SelectAction.Select:
+				NetContentManager.inst.HandleNodeConnection(SpecialNodeManager.inst.selected_sp, node);
+				break;
+			case SelectAction.Deselect:
+				NetContentManager.inst.HandleNodeConnection(SpecialNodeManager.inst.selected_sp, node, ConnectType.Disconnect);
+				break;
+			case SelectAction.Toggle:
+				NetContentManager.inst.HandleNodeConnection(SpecialNodeManager.inst.selected_sp, node, ConnectType.Toggle);
+				break;
+		}
 	}
+	private void AddNewNodesToAllNodes()
+	{
+		foreach (var newNode in NetContentManager.inst.newDataNodes) {
+			NetContentManager.inst.HandleNodeConnection(SpecialNodeManager.inst.allNodes_sp, newNode);
+		}
+	}
+}
+public enum SelectAction {
+	Select,
+	Deselect,
+	Toggle,
 }

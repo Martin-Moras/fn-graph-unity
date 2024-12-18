@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class VisualNode : MonoBehaviour
 {
-    public DataNode dataNode { get; private set; } = new();
+    public DataNode dataNode { get; private set; }
     public List<Connection> connections { get; set; } = new();
     public SpriteRenderer rederer;
     public uint size;
