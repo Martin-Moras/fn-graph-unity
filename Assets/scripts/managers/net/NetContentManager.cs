@@ -2,12 +2,10 @@ using System;
 using MathNet.Numerics.Interpolation;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.Mathematics;
 using UnityEditor;
 using UnityEngine;
 using System.Text.RegularExpressions;
 using UnityEngine.AI;
-using Unity.VisualScripting;
 
 
 public class NetContentManager : I_Manager

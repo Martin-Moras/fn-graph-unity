@@ -10,6 +10,7 @@ public class GameManager : MonoBehaviour
 	public NetVisualManager netVisualManager;
 	public SpecialNodeManager specialNodeManager;
 	public VariableManager variableManager;
+	public BackupManager backupManager;
 	#region Singleton
 	public static GameManager inst { get; private set;}
 	void SingletonizeThis()
@@ -27,8 +28,10 @@ public class GameManager : MonoBehaviour
 		netInteractionManager = GetComponent<NetInteractionManager>();
 		netVisualManager = GetComponent<NetVisualManager>();
 		specialNodeManager = GetComponent<SpecialNodeManager>();
+		backupManager = GetComponent<BackupManager>();
 
 		variableManager.SingletonizeThis();
+		backupManager.SingletonizeThis();
 		netBehaviourManager.SingletonizeThis();
 		netContentManager.SingletonizeThis();
 		netInteractionManager.SingletonizeThis();
@@ -36,16 +39,17 @@ public class GameManager : MonoBehaviour
 		specialNodeManager.SingletonizeThis();
 		
 		variableManager.Initialize();
-		netBehaviourManager.Initialize();
+		specialNodeManager.Initialize();
 		netContentManager.Initialize();
+		netBehaviourManager.Initialize();
 		netInteractionManager.Initialize();
 		netVisualManager.Initialize();
-		specialNodeManager.Initialize();
+		backupManager.Initialize();
 
 	}
 	void Update()
 	{
-		netInteractionManager.ManageInputs();
+		// netInteractionManager.ManageInputs();j
 		netContentManager.ManagerUpdate();
 		netBehaviourManager.ManagerUpdate();
 		netVisualManager.ManagerUpdate();
@@ -57,13 +61,20 @@ public class GameManager : MonoBehaviour
 			x-nodes deleted this frame
 			-nodes shown this frame
 			-nodes hidden this frame
-			x - GameManager should clear all those 
-				at the begining of the frame
+			x - GameManager should clear all those at the begining of the frame
 		Visuals:
 			x get all data nodes
 			x turn them into Visual nodes
 			x add them to the allVisualNodes list
-			connect visual nodes
+			x connect visual nodes
+			-handle life spriteRenderer change based on connected nodes
+			-update positions of lineRenderers of connections
+			-show only nodes which are connected to the special node "visable"
+			-delete visual nodes once they aren't connected to the "visable" node
+			-add functionality to the summerize node
+			-add functionality to the category node
+				-visualManager part
+				-contentManager part
 
 		load
 			x create new data nodes

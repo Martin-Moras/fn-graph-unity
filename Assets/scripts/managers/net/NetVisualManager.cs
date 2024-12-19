@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using UnityEngine;
 
 public class NetVisualManager : I_Manager
@@ -30,14 +31,42 @@ public class NetVisualManager : I_Manager
 	public override void ManagerUpdate()
 	{
 		VisualizeNewNodes();
+		DeVidualizeNodes();
+		ChangeVisualNodes();
+		ManageConnectionForces();
 		ManageSprite();
 		ManageConnectionLine();
 	}
 	private void VisualizeNewNodes()
 	{
 		VisualizeNodes(NetContentManager.inst.thisFrame_newDataNodes);
-	}	
+	}
+	private void DeVidualizeNodes()
+	{
+		foreach (var dataNode in NetContentManager.inst.thisFrame_deletedDataNodes) {
+			var visualNode = GetVisualNodeByDataNode(dataNode);
+			if (visualNode == null)
+				continue;
+			DeleteVisualNode(visualNode);
+		}
+	}
+	private void ChangeVisualNodes()
+	{
+		foreach (var dataNode in NetContentManager.inst.thisFrame_changedNodes) {
+			var visualNode = GetVisualNodeByDataNode(dataNode);
+			var newConnectedDataNodes = dataNode.connectedNodes.Except(visualNode.connections.Select(x => x.outNode.dataNode));
+			//find all connections in "visualNode.connections" which aren't contained in "dataNode.connectedNodes"
+			var deletedConnections = visualNode.connections.FindAll(connection=> !dataNode.connectedNodes.Contains(connection.outNode.dataNode));
 
+			foreach (var newConnectedDataNode in newConnectedDataNodes) {
+				HandleNodeConnection(visualNode, GetVisualNodeByDataNode(newConnectedDataNode));
+			}
+			foreach (var deletedConnection in deletedConnections) {
+				HandleNodeConnection(visualNode, deletedConnection.outNode, ConnectType.Disconnect);
+			}
+			visualNode.SetText(dataNode.nodePath);
+		}
+	}
 	private List<VisualNode> VisualizeNodes(List<DataNode> nodesToVisualize)
 	{
 		var newVisualNodes = CreateVisualNodes(nodesToVisualize);
@@ -52,43 +81,61 @@ public class NetVisualManager : I_Manager
 			
 			foreach(var node in nodesToVisualize) {
 				var newVisualNode = DataNodeToVisualNode(node, Vector2.one * i / 3, false, false);
-
 				newVisualNodes.Add(newVisualNode);
-				thisFrame_newVisualNodes.Add(newVisualNode);
-				allVisualNodes.Add(newVisualNode);
 				i++;
 			}
 			return newVisualNodes;
 		}
 		void ConnectNewVisualNodes(List<VisualNode> visualNodeToConnect)
 		{
-			foreach (var newNode in newVisualNodes) {
+			foreach (var newNode in visualNodeToConnect) {
 				ConnectOtherNodesTo(newNode);
 				ConnectToOtherNodes(newNode);
 			}
 		}
 	}
+	private VisualNode GetVisualNodeByDataNode(DataNode dataNode)
+	{
+		var visualNode = allVisualNodes.Find(x=>x.dataNode == dataNode);
+		return visualNode;
+	}
 	private VisualNode DataNodeToVisualNode(DataNode dataNode, Vector2 pos, bool connectToOther, bool connectOtersToThis)
 	{
-		var visNode = Instantiate(VariableManager.inst.NodePrefab, (Vector3)pos, Quaternion.identity).GetComponent<VisualNode>();
-		visNode.NodeConstructor(dataNode, null);
+		var newVisualNode = Instantiate(VariableManager.inst.NodePrefab, (Vector3)pos, Quaternion.identity).GetComponent<VisualNode>();
+		newVisualNode.NodeConstructor(dataNode, null);
 		if (connectToOther)
-			ConnectToOtherNodes(visNode);
+			ConnectToOtherNodes(newVisualNode);
 		if (connectOtersToThis)
-			ConnectOtherNodesTo(visNode);
-		return visNode;
+			ConnectOtherNodesTo(newVisualNode);
+		thisFrame_newVisualNodes.Add(newVisualNode);
+		allVisualNodes.Add(newVisualNode);
+		return newVisualNode;
+	}
+	private void DeleteVisualNode(VisualNode node)
+	{
+		DisconnectOtherNodesFrom(node);
+		foreach (var connectedConnection in node.connections) {
+			DeleteConection(connectedConnection);
+		}
+		thisFrame_DeletedVisualNodes.Add(node);
+		Destroy(node);
 	}
 	private List<VisualNode> ConnectToOtherNodes(VisualNode node)
 	{
 		//Find all VisualNodes which node connects to
-		var outGoingConnectionVisualNodes = allVisualNodes.FindAll(x=>
-			node.connections.Exists(nodeConnection=>
-			nodeConnection.outNode.dataNode == x.dataNode));
+		var outGoingConnectionVisualNodes = allVisualNodes.FindAll(visualNode=>
+			node.dataNode.connectedNodes.Contains(visualNode.dataNode));
 
 		foreach (var outGoingConnectionVisualNode in outGoingConnectionVisualNodes) {
 			HandleNodeConnection(node, outGoingConnectionVisualNode);
 		}
 		return outGoingConnectionVisualNodes;
+	}
+	private void DisconnectOtherNodesFrom(VisualNode node)
+	{
+		foreach (var visualNode in allVisualNodes) {
+			HandleNodeConnection(visualNode, node, ConnectType.Disconnect);
+		}
 	}
 	private List<VisualNode> ConnectOtherNodesTo(VisualNode node)
 	{
@@ -110,24 +157,11 @@ public class NetVisualManager : I_Manager
 			// else renderer.color = Color.red; 
 		}
 	}
-	public Connection NewConnection(VisualNode outNode)
+	private void ManageConnectionLine()
 	{
-		var newConnetion = Instantiate(VariableManager.inst.ConnectionPrefab).GetComponent<Connection>();
-		newConnetion.outNode = outNode;
-		return newConnetion;
-	}
-	private void ManageConnectionLine(){
-		foreach (var node in NetContentManager.inst.GetAllNodes()){
-			foreach (var connection in node.connections)
-			{
+		foreach (var node in allVisualNodes){
+			foreach (var connection in node.connections) {
 				connection.line.SetPositions(new Vector3[]{node.transform.position, connection.outNode.transform.position});
-			}
-		}
-	}
-	private void ManageConnections(){
-		foreach (var node in GetAllNodes().ToList()) {
-			for (int i = 0; i < node.connectedNodes.Count; i++) {
-				node.connections[i].line.SetPositions(new[]{node.transform.position, node.connectedNodes[i].transform.position});
 			}
 		}
 	}
@@ -137,15 +171,16 @@ public class NetVisualManager : I_Manager
 			case ConnectType.Connect:
 				Connection newConnection = null;
 				if (!fromNode.connections.Exists(x=>x.outNode == toNode)) {
-					newConnection = NewConnection(toNode);
+					newConnection = CreateConnection(toNode);
 					fromNode.connections.Add(newConnection);
-					thisFrame_newConnections.Add(newConnection);
 				}
 				return newConnection;
 			case ConnectType.Disconnect:
 				var connection = fromNode.connections.Find(x=>x.outNode == toNode);
+				if (connection == null)
+					return null;
+				DeleteConection(connection);
 				fromNode.connections.Remove(connection);
-				thisFrame_DeletedConnections.Add(connection);
 				return connection;
 			case ConnectType.Toggle:
 				if (fromNode.connections.Exists(x=>x == toNode))
@@ -156,21 +191,33 @@ public class NetVisualManager : I_Manager
 				return null;
 		}
 	}
-	
+	private Connection CreateConnection(VisualNode outNode)
+	{
+		var newConnetion = Instantiate(VariableManager.inst.ConnectionPrefab).GetComponent<Connection>();
+		newConnetion.outNode = outNode;
+		allConnections.Add(newConnetion);
+		thisFrame_newConnections.Add(newConnetion);
+		return newConnetion;
+	}
+	private void DeleteConection(Connection connection)
+	{
+		thisFrame_DeletedConnections.Add(connection);
+		Destroy(connection);
+	}
 	/// <summary>
 	/// applyes a spring force to each connection between nodes
 	/// </summary>
-		private void ManageConnectionForces(){
-		foreach (var node in NetContentManager.inst.GetAllNodes())
+	private void ManageConnectionForces(){
+		foreach (var node in allVisualNodes)
 		{
-			foreach (var connectedNode in node.connectedNodes)
+			foreach (var connectedConnection in node.connections)
 			{
-				var relativeNodePos = connectedNode.transform.position - node.transform.position;
+				var relativeNodePos = connectedConnection.outNode.transform.position - node.transform.position;
 				var nodeDistance = relativeNodePos.magnitude;
 				//the difference between node distance and how far they should be apart
 				var offsetFromSpringRestLenght = nodeDistance - springRestLenght;
 				//get rigitbodys from node and connectedNode
-				var connectedNodeRb = connectedNode.GetComponent<Rigidbody2D>();
+				var connectedNodeRb = connectedConnection.outNode.GetComponent<Rigidbody2D>();
 				var nodeRb = node.GetComponent<Rigidbody2D>();
 				//get the velocity relative to the direction of the other node
 				var nodeSpringVel = Vector2.Dot(nodeRb.velocity, relativeNodePos.normalized);

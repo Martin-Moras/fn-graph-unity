@@ -66,6 +66,7 @@ public class SpecialNodeManager : I_Manager
 			NetContentManager.inst.HandleNodeConnection(specialNode_sp, specialNodes_dict[specialNodeKey]);
 		}
 	}
+	private void SetupSpe
 }
 public enum PatternIdentifierNodes
 {

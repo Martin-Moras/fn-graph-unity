@@ -1,6 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
+using System;
 
 public class DataNode
 {
@@ -10,10 +10,7 @@ public class DataNode
     public List<DataNode> connectedNodes { get; set; } = new();
     public DataNode(string nodePath, uint nodeId, List<uint> connectedNodeIds) 
     {
-        if(this.nodePath == "" || this.nodePath == null) 
-            this.nodePath = UnityEngine.Random.Range(0, 500000).ToString();
-        else
-			this.nodePath = nodePath;
+		this.nodePath = nodePath;
         this.nodeId = nodeId;
         if (connectedNodeIds == null) this.connectedNodeIds = new();
         else this.connectedNodeIds = connectedNodeIds;
