@@ -122,6 +122,54 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &115629810
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 115629814}
+  - component: {fileID: 115629816}
+  m_Layer: 0
+  m_Name: InputEventManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &115629814
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 115629810}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -1.842314, y: -1.274353, z: -0.2130018}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &115629816
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 115629810}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: df58d58174bdc089585d73d100a391f5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mousePosWorld: {x: 0, y: 0}
+  mousePosScreen: {x: 0, y: 0}
+  moveCamera: {x: 0, y: 0}
+  changeCameraSize: 0
 --- !u!1 &606790521
 GameObject:
   m_ObjectHideFlags: 0
@@ -133,7 +181,6 @@ GameObject:
   - component: {fileID: 606790524}
   - component: {fileID: 606790523}
   - component: {fileID: 606790522}
-  - component: {fileID: 606790525}
   m_Layer: 0
   m_Name: Camera
   m_TagString: MainCamera
@@ -215,19 +262,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &606790525
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 606790521}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9c811732d19a4b0ccbbf038f1ad338b8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  mainCamera: {fileID: 0}
 --- !u!1 &900808187
 GameObject:
   m_ObjectHideFlags: 0
@@ -372,10 +406,11 @@ GameObject:
   m_Component:
   - component: {fileID: 1286726868}
   - component: {fileID: 1286726864}
-  - component: {fileID: 1286726866}
   - component: {fileID: 1286726870}
-  - component: {fileID: 1286726865}
   - component: {fileID: 1286726869}
+  - component: {fileID: 1286726874}
+  - component: {fileID: 1286726865}
+  - component: {fileID: 1286726873}
   - component: {fileID: 1286726871}
   - component: {fileID: 1286726872}
   m_Layer: 0
@@ -403,8 +438,7 @@ MonoBehaviour:
   cameraMoveSpeed: 0.5
   cameraSizechangeSpeed: 0.5
   cameraDefaultSize: 7
-  netSavePath: /run/media/martin/Martin-1T/Documents/Coding/unity/fn-graph/net saves
-  specialNodesSavePath: 
+  relativeSpecialNodeSavePath: 
   saveFileSeperatorStr: 3b00
   netSaveFileExtentionPattern: \.fnet$
   netSaveFileExtention: .fnet
@@ -422,22 +456,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   id: 
---- !u!114 &1286726866
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1286726863}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: df58d58174bdc089585d73d100a391f5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  mousePosWorld: {x: 0, y: 0}
-  mousePosScreen: {x: 0, y: 0}
-  moveCamera: {x: 0, y: 0}
-  changeCameraSize: 0
 --- !u!4 &1286726868
 Transform:
   m_ObjectHideFlags: 0
@@ -492,6 +510,8 @@ MonoBehaviour:
   netVisualManager: {fileID: 0}
   specialNodeManager: {fileID: 0}
   variableManager: {fileID: 0}
+  backupManager: {fileID: 0}
+  cameraManager: {fileID: 0}
 --- !u!114 &1286726871
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -516,6 +536,31 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1da8d14170aa2b49b9f6d39ba677b7ee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1286726873
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1286726863}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: acd2a32e86289b2df8906c983946a1a4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1286726874
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1286726863}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9c811732d19a4b0ccbbf038f1ad338b8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mainCamera: {fileID: 606790523}
 --- !u!1 &1797919409
 GameObject:
   m_ObjectHideFlags: 0
@@ -625,3 +670,4 @@ SceneRoots:
   - {fileID: 1286726868}
   - {fileID: 606790524}
   - {fileID: 1797919413}
+  - {fileID: 115629814}

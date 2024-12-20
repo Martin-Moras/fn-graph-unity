@@ -37,7 +37,7 @@ public class NetContentManager : I_Manager
 	/// </summary>
 	/// <param name="nodePath"></param>
 	/// <returns></returns>
-	public DataNode NewNode(uint nodeId, List<uint> connectedNodeIds, string nodePath = "")
+	public DataNode NewNode(uint nodeId, List<uint> connectedNodeIds, string nodePath)
 	{
 		//if path = "" change it to a random number
 		if (nodePath == "")
@@ -45,15 +45,24 @@ public class NetContentManager : I_Manager
 		//create a new node
 		var newNode = new DataNode(nodePath, nodeId, connectedNodeIds);
 		thisFrame_newDataNodes.Add(newNode);
-		SetConnectedDataNodesBasedOnConnectedNodeId(newNode);
+		if (connectedNodeIds != null && connectedNodeIds.Count > 0)
+			SetConnectedDataNodesBasedOnConnectedNodeId(newNode);
 		return newNode;
 	}
 	public void SetConnectedDataNodesBasedOnConnectedNodeId(DataNode dataNode)
 	{
 		//loop through all nodes that connect to "dataNode"
-		foreach (var ingoingConnectedNode in GetAllNodes().FindAll(x=>x.connectedNodeIds.Contains(dataNode.nodeId))) {
+		var allNodes = GetAllNodes();
+		var inGoingConnectedNodes = new List<DataNode>();
+		foreach (var connectedId in dataNode.connectedNodeIds) {
+			var connectedNode = allNodes.Find(x=>x.nodeId == connectedId);
+			if (connectedNode == null)
+				continue;
+			inGoingConnectedNodes.Add(connectedNode);
+		}
+		foreach (var inGoingConnectedNode in inGoingConnectedNodes) {
 			//connect node which has the id of "dataNode" in its "connectedNodeIds"
-			HandleNodeConnection(ingoingConnectedNode, dataNode);
+			HandleNodeConnection(inGoingConnectedNode, dataNode);
 		}
 		//connect dataNode to all nodes
 		foreach (var connectedNodeId in dataNode.connectedNodeIds) {
@@ -79,6 +88,8 @@ public class NetContentManager : I_Manager
 	/// <param name="connectType"></param>
 	public void HandleNodeConnection(DataNode fromNode, DataNode toNode, ConnectType connectType = ConnectType.Connect)
 	{
+		if (fromNode == null || toNode == null)
+			return;
 		switch (connectType) {
 			case ConnectType.Connect:
 				if (!fromNode.connectedNodes.Exists(x=>x == toNode))

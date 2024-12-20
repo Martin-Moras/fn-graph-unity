@@ -6,8 +6,9 @@ using UnityEngine;
 public class Connection : MonoBehaviour
 {
     public LineRenderer line;
-    public VisualNode outNode;
-    public void Initiallize() {
+    public VisualNode outNode { get; private set; }
+    public void Constructor(VisualNode outNode) {
         line = GetComponent<LineRenderer>();
+		this.outNode = outNode;
     }
 }

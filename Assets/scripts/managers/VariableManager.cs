@@ -20,8 +20,8 @@ public class VariableManager : I_Manager
 	#endregion Camera
 	#region Save/Load
 	public string rootPath {get; private set;}
-	public string netSavePath;
-	public string specialNodesSavePath;
+	public string netSavePath {get; private set;}
+	public string relativeSpecialNodeSavePath;
 	public char[] saveFileSeperatorStr = new[] {';'};
 	public string netSaveFileExtentionPattern = @"\.fnet$";
 	public string netSaveFileExtention = @".fnet";
@@ -43,7 +43,7 @@ public class VariableManager : I_Manager
 		SingletonizeThis();
 		rootPath = Application.dataPath;
 		netSavePath = Path.Combine(rootPath, "saved_nets");
-		specialNodesSavePath = Path.Combine(netSavePath, specialNodeName, netSaveFileExtention);
+		relativeSpecialNodeSavePath = "";;
 	}
 	public uint GenerateId()
 	{
@@ -63,6 +63,5 @@ public class VariableManager : I_Manager
 
 	public override void ManagerUpdate()
 	{
-		throw new NotImplementedException();
 	}
 }

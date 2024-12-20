@@ -32,7 +32,7 @@ public class SpecialNodeManager : I_Manager
 			{"Category", category_sp},
 		};
 		//load special Nodes from a file
-		var loadedSaverNode = BackupManager.inst.LoadFile(VariableManager.inst.specialNodesSavePath);
+		var loadedSaverNode = BackupManager.inst.LoadFile(VariableManager.inst.relativeSpecialNodeSavePath);
 		
 		SetSpecialNodeVariables(loadedSaverNode, specialNodes_dict);
 		//Create special Node File if it doesn't exist 
@@ -45,12 +45,13 @@ public class SpecialNodeManager : I_Manager
 
 	public override void ManagerUpdate()
 	{
-		throw new NotImplementedException();
 	}
 	public void AddSaverNode(DataNode saverNode)
 	{
-		if (saverNode == null || saverNode_sp == null) 
+		if (saverNode == null || saverNode_sp == null) {
+			Debug.LogWarning("Saver Node is Null");
 			return;
+		}
 		NetContentManager.inst.HandleNodeConnection(saverNode_sp, saverNode);
 	}
 	private void SetSpecialNodeVariables(DataNode specialSaverNode, Dictionary<string, DataNode> specialNodes_dict) 
@@ -59,14 +60,13 @@ public class SpecialNodeManager : I_Manager
 			specialNode_sp = NetContentManager.inst.NewNode(VariableManager.inst.GenerateId(), null, VariableManager.inst.specialNodeName);
 		else
 			specialNode_sp = specialSaverNode;
-		foreach (var specialNodeKey in specialNodes_dict.Keys) {
+		foreach (var specialNodeKey in new List<string>(specialNodes_dict.Keys)) {
 			specialNodes_dict[specialNodeKey] = specialNode_sp.connectedNodes.Find(x=>x.nodePath == specialNodeKey);
 			if (specialNodes_dict[specialNodeKey] == null)
 				specialNodes_dict[specialNodeKey] = NetContentManager.inst.NewNode(VariableManager.inst.GenerateId(), null, specialNodeKey);
 			NetContentManager.inst.HandleNodeConnection(specialNode_sp, specialNodes_dict[specialNodeKey]);
 		}
 	}
-	private void SetupSpe
 }
 public enum PatternIdentifierNodes
 {

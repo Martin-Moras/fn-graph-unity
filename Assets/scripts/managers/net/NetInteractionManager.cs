@@ -8,7 +8,7 @@ using UnityEngine.InputSystem;
 
 public class NetInteractionManager : I_Manager
 {
-	private MainInput mainInput;
+	public MainInput mainInput;
 	public Vector2 mousePosWorld;
 	public Vector2 mousePosScreen;
 	public Vector2 moveCamera;
@@ -26,14 +26,17 @@ public class NetInteractionManager : I_Manager
 	#endregion
 	public override void Initialize()
 	{
+		if (mainInput == null)
+			mainInput = new();
+		mainInput.mainScene.NewNode.performed += OnNewNode;
 	}
-	private void Awake() {
-		mainInput = new();
-		mainInput.Enable();
+	public override void ManagerUpdate()
+	{
+		ManageInputs();
 	}
-
 	public void ManageInputs(){
-		if (mainInput.mainScene.NewNode.triggered) NetContentManager.inst.NewNode(VariableManager.inst.GenerateId(), null, "unnamed");
+		if (mainInput.mainScene.NewNode.triggered) 
+			NetContentManager.inst.NewNode(VariableManager.inst.GenerateId(), null, "unnamed");
 		//connect new node to all selected nodes
 		if (mainInput.mainScene.NewChildNode.triggered) {
 			foreach (var selectedNode in SpecialNodeManager.inst.selected_sp.connectedNodes) {
@@ -41,10 +44,11 @@ public class NetInteractionManager : I_Manager
 			}
 		}
 		//Load all
-		if (mainInput.mainScene.Load.triggered) BackupManager.inst.LoadDirectory(VariableManager.inst.netSavePath);
+		if (mainInput.mainScene.Load.triggered) 
+			BackupManager.inst.LoadDirectory(VariableManager.inst.netSavePath);
 		//Save all
 		if (mainInput.mainScene.Save.triggered)
-			BackupManager.inst.SaveNodes(NetContentManager.inst.GetAllNodes().ToList());
+			BackupManager.inst.SaveNodes(SpecialNodeManager.inst.saverNode_sp.connectedNodes);
 		//Connect to selected nodes
 		if (mainInput.mainScene.ConnectToSelectedNodes.triggered) 
 			NetContentManager.inst.ConnectSelectedNodes(GetNodeUnderCursor(), ConnectType.Connect, true);
@@ -60,6 +64,10 @@ public class NetInteractionManager : I_Manager
 		//Manage cursor position
 		mousePosScreen = Input.mousePosition;
 		mousePosWorld = Camera.main.ScreenToWorldPoint(mousePosScreen);
+	}
+	private void OnNewNode(InputAction.CallbackContext context)
+	{
+		Debug.Log("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\naaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\naaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\naaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\naaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\naaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\naaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\naaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\naaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\naaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\naaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\naaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\n");
 	}
 	public DataNode GetNodeUnderCursor(){
 		var objectsUnderCursor = Physics2D.OverlapCircleAll(mousePosWorld, VariableManager.inst.nodeSelectionRadius);
@@ -83,18 +91,14 @@ public class NetInteractionManager : I_Manager
 	private void DropNode(){
 	
 	}
-	public void SelectNodes(DataNode[] nodesToSelect){
-		
-	}
 	private void OnEnable(){
-		mainInput.Enable();
+		if (mainInput != null)
+			mainInput.mainScene.Enable();
+		else
+			mainInput = new();
 	}
 	private void OnDisable(){
-		mainInput.Disable();
-	}
-
-	public override void ManagerUpdate()
-	{
-		throw new NotImplementedException();
+		if (mainInput != null)
+			mainInput.mainScene.Disable();
 	}
 }

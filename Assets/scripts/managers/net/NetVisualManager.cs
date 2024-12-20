@@ -194,7 +194,7 @@ public class NetVisualManager : I_Manager
 	private Connection CreateConnection(VisualNode outNode)
 	{
 		var newConnetion = Instantiate(VariableManager.inst.ConnectionPrefab).GetComponent<Connection>();
-		newConnetion.outNode = outNode;
+		newConnetion.Constructor(outNode);
 		allConnections.Add(newConnetion);
 		thisFrame_newConnections.Add(newConnetion);
 		return newConnetion;

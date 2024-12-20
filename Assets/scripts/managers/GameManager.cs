@@ -11,6 +11,7 @@ public class GameManager : MonoBehaviour
 	public SpecialNodeManager specialNodeManager;
 	public VariableManager variableManager;
 	public BackupManager backupManager;
+	public CameraManager cameraManager;
 	#region Singleton
 	public static GameManager inst { get; private set;}
 	void SingletonizeThis()
@@ -25,10 +26,11 @@ public class GameManager : MonoBehaviour
 		variableManager = GetComponent<VariableManager>();
 		netBehaviourManager = GetComponent<NetBehaviourManager>();
 		netContentManager = GetComponent<NetContentManager>();
-		netInteractionManager = GetComponent<NetInteractionManager>();
+		netInteractionManager = FindObjectOfType<NetInteractionManager>();
 		netVisualManager = GetComponent<NetVisualManager>();
 		specialNodeManager = GetComponent<SpecialNodeManager>();
 		backupManager = GetComponent<BackupManager>();
+		cameraManager = GetComponent<CameraManager>();
 
 		variableManager.SingletonizeThis();
 		backupManager.SingletonizeThis();
@@ -37,24 +39,31 @@ public class GameManager : MonoBehaviour
 		netInteractionManager.SingletonizeThis();
 		netVisualManager.SingletonizeThis();
 		specialNodeManager.SingletonizeThis();
+		cameraManager.SingletonizeThis();
 		
 		variableManager.Initialize();
+		backupManager.Initialize();
 		specialNodeManager.Initialize();
 		netContentManager.Initialize();
 		netBehaviourManager.Initialize();
 		netInteractionManager.Initialize();
 		netVisualManager.Initialize();
-		backupManager.Initialize();
+		cameraManager.Initialize();
 
 	}
 	void Update()
 	{
 		// netInteractionManager.ManageInputs();j
+		variableManager.ManagerUpdate();
+		netInteractionManager.ManagerUpdate();
 		netContentManager.ManagerUpdate();
 		netBehaviourManager.ManagerUpdate();
 		netVisualManager.ManagerUpdate();
 		specialNodeManager.ManagerUpdate();
-		variableManager.ManagerUpdate();
+		cameraManager.ManagerUpdate();
+		backupManager.ManagerUpdate();
+
+		ClearPerFrameLists();
 		/*
 		!variables
 			x-nodes created this frame
@@ -93,12 +102,12 @@ public class GameManager : MonoBehaviour
 				Summerize
 				Category
 		*/
-		ClearPerFrameLists();
 	}
 	private void ClearPerFrameLists()
 	{
 		netContentManager.thisFrame_newDataNodes.Clear();
 		netContentManager.thisFrame_deletedDataNodes.Clear();
+		netContentManager.thisFrame_changedNodes.Clear();
 		netVisualManager.thisFrame_DeletedConnections.Clear();
 		netVisualManager.thisFrame_DeletedVisualNodes.Clear();
 		netVisualManager.thisFrame_newConnections.Clear();

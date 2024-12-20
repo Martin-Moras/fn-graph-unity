@@ -12,14 +12,11 @@ public class CameraManager : I_Manager {
     public Camera mainCamera;
 	public override void Initialize()
     {
-    }
-    private void Start() {
-        mainCamera = GetComponent<Camera>();
         //set camera to default size
         mainCamera.orthographicSize = VariableManager.inst.cameraDefaultSize;
-    
     }
-    private void LateUpdate(){
+	public override void ManagerUpdate()
+	{
         MoveCamera();
         ChangeSize();
     }
@@ -35,9 +32,4 @@ public class CameraManager : I_Manager {
         else
             mainCamera.orthographicSize += sizeChange;
     }
-
-	public override void ManagerUpdate()
-	{
-		throw new System.NotImplementedException();
-	}
 }

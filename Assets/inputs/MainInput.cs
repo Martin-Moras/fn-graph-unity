@@ -15,10 +15,10 @@ using System.Collections.Generic;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Utilities;
 
-public partial class MainInput: IInputActionCollection2, IDisposable
+public partial class @MainInput: IInputActionCollection2, IDisposable
 {
     public InputActionAsset asset { get; }
-    public MainInput()
+    public @MainInput()
     {
         asset = InputActionAsset.FromJson(@"{
     ""name"": ""MainInput"",
@@ -501,8 +501,8 @@ public partial class MainInput: IInputActionCollection2, IDisposable
     private readonly InputAction m_mainScene_ConnectToSelectedNodes;
     public struct MainSceneActions
     {
-        private MainInput m_Wrapper;
-        public MainSceneActions(MainInput wrapper) { m_Wrapper = wrapper; }
+        private @MainInput m_Wrapper;
+        public MainSceneActions(@MainInput wrapper) { m_Wrapper = wrapper; }
         public InputAction @NewNode => m_Wrapper.m_mainScene_NewNode;
         public InputAction @Select => m_Wrapper.m_mainScene_Select;
         public InputAction @Load => m_Wrapper.m_mainScene_Load;

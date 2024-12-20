@@ -21,10 +21,7 @@ public class BackupManager : I_Manager
 	#endregion
 	public override void Initialize()
 	{
-	}
-	private void Start() {
 		InitializeDirectories();
-		
 	}
 	private void InitializeDirectories(){
 		netDir = VariableManager.inst.netSavePath;
@@ -43,15 +40,16 @@ public class BackupManager : I_Manager
 	}
 	public string SaveNode(DataNode saverNode)
 	{
+		var fileName = saverNode.nodePath;
 		string netSaveFilePath;
-		if (saverNode.nodePath == null || saverNode.nodePath == "") 
-			netSaveFilePath = Path.Combine(netDir, "unnamed");
-		else 
-			netSaveFilePath = Path.Combine(netDir, saverNode.nodePath);
-		if (GetPathType(netSaveFilePath) != PathType.File) {
-			Debug.LogError($"The name {saverNode.nodePath} is invalid for a Saver-node");
+		if (saverNode == null) {
+			Debug.LogWarning("saver node can't be null");
 			return null;
 		}
+		if (fileName == null || fileName == "") 
+			fileName = "unnamed";
+			netSaveFilePath = Path.Combine(netDir, fileName);
+			netSaveFilePath = Path.ChangeExtension(netSaveFilePath, VariableManager.inst.netSaveFileExtention);
 		var nodeFile = File.Create(netSaveFilePath);
 		nodeFile.Close();
 		var saveFileBuilder = new StringBuilder();
@@ -192,8 +190,8 @@ public class BackupManager : I_Manager
 	#endregion
 	private void CreateDirIfDoesntExist(string dirPath) 
 	{
-		if (!Directory.Exists(Path.GetDirectoryName(dirPath))) 
-			Directory.CreateDirectory(Path.GetDirectoryName(dirPath));
+		if (!Directory.Exists(dirPath)) 
+			Directory.CreateDirectory(dirPath);
 	}
 	PathType GetPathType(string path)
 	{
@@ -216,7 +214,6 @@ public class BackupManager : I_Manager
 
 	public override void ManagerUpdate()
 	{
-		throw new NotImplementedException();
 	}
 
 	private enum PathType {
