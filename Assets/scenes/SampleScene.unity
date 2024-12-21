@@ -122,54 +122,6 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!1 &115629810
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 115629814}
-  - component: {fileID: 115629816}
-  m_Layer: 0
-  m_Name: InputEventManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &115629814
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 115629810}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.842314, y: -1.274353, z: -0.2130018}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &115629816
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 115629810}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: df58d58174bdc089585d73d100a391f5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  mousePosWorld: {x: 0, y: 0}
-  mousePosScreen: {x: 0, y: 0}
-  moveCamera: {x: 0, y: 0}
-  changeCameraSize: 0
 --- !u!1 &606790521
 GameObject:
   m_ObjectHideFlags: 0
@@ -256,7 +208,7 @@ Transform:
   m_GameObject: {fileID: 606790521}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.400629, y: -0.6482528, z: -0.05228002}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -413,6 +365,7 @@ GameObject:
   - component: {fileID: 1286726873}
   - component: {fileID: 1286726871}
   - component: {fileID: 1286726872}
+  - component: {fileID: 1286726875}
   m_Layer: 0
   m_Name: Managers
   m_TagString: Untagged
@@ -434,7 +387,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   NodePrefab: {fileID: 7351123432397324919, guid: 914774885dd9c317eb84f40e46d6f643, type: 3}
   ConnectionPrefab: {fileID: 6440739936479507382, guid: 668c04ce8e513b26098c8e6571c14558, type: 3}
-  nodeSelectionRadius: 1
+  nodeSelectionRadius: 0.01
   cameraMoveSpeed: 0.5
   cameraSizechangeSpeed: 0.5
   cameraDefaultSize: 7
@@ -490,7 +443,7 @@ MonoBehaviour:
   thisFrame_newConnections: []
   thisFrame_DeletedConnections: []
   springStiffness: 10
-  springRestLenght: 10
+  springRestLenght: 1
   springDamping: 1
 --- !u!114 &1286726870
 MonoBehaviour:
@@ -504,14 +457,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a8914cf5b8b07c1d09d0120c2a70d83d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  netBehaviourManager: {fileID: 0}
-  netContentManager: {fileID: 0}
-  netInteractionManager: {fileID: 0}
-  netVisualManager: {fileID: 0}
-  specialNodeManager: {fileID: 0}
-  variableManager: {fileID: 0}
-  backupManager: {fileID: 0}
-  cameraManager: {fileID: 0}
 --- !u!114 &1286726871
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -561,6 +506,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mainCamera: {fileID: 606790523}
+--- !u!114 &1286726875
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1286726863}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: df58d58174bdc089585d73d100a391f5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mousePosWorld: {x: 0, y: 0}
+  mousePosScreen: {x: 0, y: 0}
+  moveCamera: {x: 0, y: 0}
+  changeCameraSize: 0
 --- !u!1 &1797919409
 GameObject:
   m_ObjectHideFlags: 0
@@ -670,4 +631,3 @@ SceneRoots:
   - {fileID: 1286726868}
   - {fileID: 606790524}
   - {fileID: 1797919413}
-  - {fileID: 115629814}

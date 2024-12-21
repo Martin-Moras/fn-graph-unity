@@ -1,19 +1,12 @@
 using UnityEngine;
 using UnityEngine.Scripting.APIUpdating;
 public class CameraManager : I_Manager {
-    #region Singleton
-    public static CameraManager inst { get; private set;}
-    public override void SingletonizeThis()
-    {
-        if (inst != null && inst != this) Destroy(this);
-        else inst = this;
-    }
-    #endregion
     public Camera mainCamera;
 	public override void Initialize()
     {
+		mainCamera ??= Camera.main;
         //set camera to default size
-        mainCamera.orthographicSize = VariableManager.inst.cameraDefaultSize;
+        mainCamera.orthographicSize = GameManager.inst.variableManager.cameraDefaultSize;
     }
 	public override void ManagerUpdate()
 	{
@@ -21,11 +14,11 @@ public class CameraManager : I_Manager {
         ChangeSize();
     }
     private void MoveCamera(){
-        transform.position += (Vector3)NetInteractionManager.inst.moveCamera * VariableManager.inst.cameraMoveSpeed;
+        mainCamera.transform.position += (Vector3)GameManager.inst.netInteractionManager.moveCamera * GameManager.inst.variableManager.cameraMoveSpeed;
     }
     private void ChangeSize(){
         var minSize = .1f;
-        var sizeChange = VariableManager.inst.cameraSizechangeSpeed * NetInteractionManager.inst.changeCameraSize;
+        var sizeChange = GameManager.inst.variableManager.cameraSizechangeSpeed * GameManager.inst.netInteractionManager.changeCameraSize;
         
         if ((mainCamera.orthographicSize + sizeChange) < minSize) 
             mainCamera.orthographicSize = minSize;

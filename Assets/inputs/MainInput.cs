@@ -83,12 +83,12 @@ public partial class @MainInput: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": ""ChangeCameraSize"",
-                    ""type"": ""Button"",
+                    ""type"": ""Value"",
                     ""id"": ""7b1737d2-7fd8-4116-ba85-a55f332cfba5"",
-                    ""expectedControlType"": ""Button"",
+                    ""expectedControlType"": ""Analog"",
                     ""processors"": """",
                     ""interactions"": """",
-                    ""initialStateCheck"": false
+                    ""initialStateCheck"": true
                 },
                 {
                     ""name"": ""ConnectSelectedNodes"",
@@ -146,7 +146,7 @@ public partial class @MainInput: IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""ac505fdd-6872-40be-91c2-77edc4fa8614"",
-                    ""path"": ""<Keyboard>/k"",
+                    ""path"": ""<Keyboard>/o"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -344,7 +344,7 @@ public partial class @MainInput: IInputActionCollection2, IDisposable
                 {
                     ""name"": ""negative"",
                     ""id"": ""9953f52d-e3a3-444b-bbc5-79758620000c"",
-                    ""path"": ""<Keyboard>/numpadMinus"",
+                    ""path"": ""<Keyboard>/j"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Pc"",
@@ -355,7 +355,7 @@ public partial class @MainInput: IInputActionCollection2, IDisposable
                 {
                     ""name"": ""positive"",
                     ""id"": ""9d47a8fb-7588-4547-ad1c-5c361c76a1d3"",
-                    ""path"": ""<Keyboard>/numpadPlus"",
+                    ""path"": ""<Keyboard>/k"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Pc"",
@@ -375,7 +375,7 @@ public partial class @MainInput: IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 },
                 {
-                    ""name"": ""negative"",
+                    ""name"": ""positive"",
                     ""id"": ""751e228d-05d3-4bdf-b4ae-ba796b329afa"",
                     ""path"": ""<Mouse>/scroll/down"",
                     ""interactions"": """",
@@ -386,7 +386,7 @@ public partial class @MainInput: IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": true
                 },
                 {
-                    ""name"": ""positive"",
+                    ""name"": ""negative"",
                     ""id"": ""6ec5cb79-bacf-4b6a-ab80-eb74b34b9fc2"",
                     ""path"": ""<Mouse>/scroll/up"",
                     ""interactions"": """",

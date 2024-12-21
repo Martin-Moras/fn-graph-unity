@@ -7,11 +7,11 @@ using UnityEngine.Assertions.Must;
 
 public class VisualNode : MonoBehaviour
 {
-    public DataNode dataNode { get; private set; }
-    public List<Connection> connections { get; set; }
-    public SpriteRenderer sprite { get; private set; }
-	public TextMeshPro text { get; private set; }
-    public uint size { get; private set; }
+    public DataNode dataNode; //{ get; private set; }
+    public List<Connection> connections; //{ get; set; }
+    public SpriteRenderer sprite; //{ get; private set; }
+	public TextMeshPro text; //{ get; private set; }
+    public uint size; //{ get; private set; }
     public void NodeConstructor(DataNode dataNode, List<Connection> connections){
 		if (dataNode == null) {
 			Debug.LogWarning("Visual node constructor: dataNode can't be null");

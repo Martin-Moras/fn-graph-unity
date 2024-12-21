@@ -4,21 +4,29 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-	public NetBehaviourManager netBehaviourManager;
-	public NetContentManager netContentManager;
-	public NetInteractionManager netInteractionManager;
-	public NetVisualManager netVisualManager;
-	public SpecialNodeManager specialNodeManager;
-	public VariableManager variableManager;
-	public BackupManager backupManager;
-	public CameraManager cameraManager;
+	private DataNode temp_allsaver;
+
+	public NetBehaviourManager netBehaviourManager { get; private set; }
+	public NetContentManager netContentManager { get; private set; }
+	public NetInteractionManager netInteractionManager { get; private set; }
+	public NetVisualManager netVisualManager { get; private set; }
+	public SpecialNodeManager specialNodeManager { get; private set; }
+	public VariableManager variableManager { get; private set; }
+	public BackupManager backupManager { get; private set; }
+	public CameraManager cameraManager { get; private set; }
 	#region Singleton
 	public static GameManager inst { get; private set;}
-	void SingletonizeThis()
+	private static void SingletonizeThis()
 	{
-		if (inst != null && inst != this) Destroy(this);
-		else inst = this;
+		var thisClass = FindObjectOfType<GameManager>();
+		if (inst != null && inst != thisClass) Destroy(thisClass);
+		else inst = thisClass;
 	}
+	[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterAssembliesLoaded)]
+    private static void OnRuntimeMethodLoad()
+    {
+		SingletonizeThis();
+    }
 	#endregion
 	private void Awake() {
 		SingletonizeThis();
@@ -26,21 +34,12 @@ public class GameManager : MonoBehaviour
 		variableManager = GetComponent<VariableManager>();
 		netBehaviourManager = GetComponent<NetBehaviourManager>();
 		netContentManager = GetComponent<NetContentManager>();
-		netInteractionManager = FindObjectOfType<NetInteractionManager>();
+		netInteractionManager = GetComponent<NetInteractionManager>();
 		netVisualManager = GetComponent<NetVisualManager>();
 		specialNodeManager = GetComponent<SpecialNodeManager>();
 		backupManager = GetComponent<BackupManager>();
 		cameraManager = GetComponent<CameraManager>();
 
-		variableManager.SingletonizeThis();
-		backupManager.SingletonizeThis();
-		netBehaviourManager.SingletonizeThis();
-		netContentManager.SingletonizeThis();
-		netInteractionManager.SingletonizeThis();
-		netVisualManager.SingletonizeThis();
-		specialNodeManager.SingletonizeThis();
-		cameraManager.SingletonizeThis();
-		
 		variableManager.Initialize();
 		backupManager.Initialize();
 		specialNodeManager.Initialize();
@@ -50,6 +49,7 @@ public class GameManager : MonoBehaviour
 		netVisualManager.Initialize();
 		cameraManager.Initialize();
 
+		temp_allsaver = specialNodeManager.NewSaverNode("All saver");
 	}
 	void Update()
 	{
@@ -58,10 +58,17 @@ public class GameManager : MonoBehaviour
 		netInteractionManager.ManagerUpdate();
 		netContentManager.ManagerUpdate();
 		netBehaviourManager.ManagerUpdate();
+		foreach (var newNode in netContentManager.thisFrame_newDataNodes) {
+			if (newNode != specialNodeManager.allNodes_sp && newNode != specialNodeManager.saverNode_sp)
+				netContentManager.HandleNodeConnection(temp_allsaver, newNode);
+		}
+		foreach (var deletedNode in netContentManager.thisFrame_deletedDataNodes)
+			netContentManager.HandleNodeConnection(temp_allsaver, deletedNode, ConnectType.Disconnect);
 		netVisualManager.ManagerUpdate();
 		specialNodeManager.ManagerUpdate();
 		cameraManager.ManagerUpdate();
 		backupManager.ManagerUpdate();
+
 
 		ClearPerFrameLists();
 		/*
@@ -112,6 +119,5 @@ public class GameManager : MonoBehaviour
 		netVisualManager.thisFrame_DeletedVisualNodes.Clear();
 		netVisualManager.thisFrame_newConnections.Clear();
 		netVisualManager.thisFrame_newVisualNodes.Clear();
-
 	}
 }

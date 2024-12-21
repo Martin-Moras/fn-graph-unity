@@ -6,25 +6,17 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Data.Common;
+using System.Runtime.InteropServices.WindowsRuntime;
 
 public class BackupManager : I_Manager
 {
 	string netDir;
-
-	#region Singleton
-	public static BackupManager inst { get; private set;}
-	public override void SingletonizeThis()
-	{
-		if (inst != null && inst != this) Destroy(this);
-		else inst = this;
-	}
-	#endregion
 	public override void Initialize()
 	{
 		InitializeDirectories();
 	}
 	private void InitializeDirectories(){
-		netDir = VariableManager.inst.netSavePath;
+		netDir = GameManager.inst.variableManager.netSavePath;
 		//Create net directory
 		CreateDirIfDoesntExist(netDir);
 	}
@@ -48,24 +40,26 @@ public class BackupManager : I_Manager
 		}
 		if (fileName == null || fileName == "") 
 			fileName = "unnamed";
-			netSaveFilePath = Path.Combine(netDir, fileName);
-			netSaveFilePath = Path.ChangeExtension(netSaveFilePath, VariableManager.inst.netSaveFileExtention);
+		netSaveFilePath = Path.Combine(netDir, fileName);
+		netSaveFilePath = Path.ChangeExtension(netSaveFilePath, GameManager.inst.variableManager.netSaveFileExtention);
 		var nodeFile = File.Create(netSaveFilePath);
 		nodeFile.Close();
 		var saveFileBuilder = new StringBuilder();
+		saveFileBuilder.Append("Id:");
+		saveFileBuilder.AppendLine(saverNode.nodeId.ToString());
 		foreach (var node in saverNode.connectedNodes) {
 			//Add node Id
 			saveFileBuilder.Append(node.nodeId);
-			saveFileBuilder.Append(VariableManager.inst.saveFileSeperatorStr);
+			saveFileBuilder.Append(GameManager.inst.variableManager.saveFileSeperatorStr);
 			//Add node Name
 			saveFileBuilder.Append(node.nodePath);
-			saveFileBuilder.Append(VariableManager.inst.saveFileSeperatorStr);
+			saveFileBuilder.Append(GameManager.inst.variableManager.saveFileSeperatorStr);
 
 			//Add connected nodes
 			foreach (var connectedNode in node.connectedNodes)
 			{
 				saveFileBuilder.Append(connectedNode.nodeId);
-				saveFileBuilder.Append(VariableManager.inst.saveFileSeperatorStr);
+				saveFileBuilder.Append(GameManager.inst.variableManager.saveFileSeperatorStr);
 			}
 			//Add new line
 			saveFileBuilder.AppendLine();
@@ -100,10 +94,12 @@ public class BackupManager : I_Manager
 			filePaths = new() {saveFilePath};
 		//if is directory
 		else
-			filePaths = GetFilePaths(saveFilePath, VariableManager.inst.netSaveFileExtention, maxFolderDepth);
+			filePaths = GetFilePaths(saveFilePath, GameManager.inst.variableManager.netSaveFileExtention, maxFolderDepth);
 		//turn each file in "filePaths" into Saver-nodes and add them to "newSaverNodes"
 		foreach (var filePath in filePaths) {
-			newSaverNodes.Add(LoadFile(filePath, false));
+			var loadedFile = LoadFile(filePath, false);
+			if (loadedFile != null)
+				newSaverNodes.Add(loadedFile);
 		}
 		//return all loaded Saver-nodes and from path and its subdirectories
 		return newSaverNodes;
@@ -122,16 +118,37 @@ public class BackupManager : I_Manager
 		//split "fileContents" into its lines
 		var lines = fileContents.Split('\n', StringSplitOptions.RemoveEmptyEntries).ToList();
 		//deserialize each line into a "DataNode" and add it into "deserializedNodes"
-		foreach (var line in lines){
-			deserializedNodes.Add(DeserializeNode(line));
+		var id = GetId(lines);
+		if (id == null)
+			return null;
+		foreach (var line in lines) {
+			var deserializedNode = DeserializeNode(line);
+
+			if (deserializedNode != null)
+				deserializedNodes.Add(deserializedNode);
 		}
 		//create a saverNode
-		var saverNode = NetBehaviourManager.inst.NewSaverNode(
-			VariableManager.inst.GenerateId(), 
-			deserializedNodes, 
-			Path.GetFileNameWithoutExtension(filePath));
-		SpecialNodeManager.inst.AddSaverNode(saverNode);
+		var saverNode = GameManager.inst.specialNodeManager.NewSaverNode(
+			Path.GetFileNameWithoutExtension(filePath),
+			(uint)id, 
+			deserializedNodes);
+		GameManager.inst.specialNodeManager.AddSaverNode(saverNode);
 		return saverNode;
+
+		uint? GetId(List<string> lines)
+		{
+			if (lines == null)
+				return null;
+			if (!lines.First().StartsWith("Id:"))
+				return null;
+			var lineParts = lines.First().Split(new char[]{':'});
+			if (lineParts.Length != 2)
+				return null;
+			if (!uint.TryParse(lineParts[1], out uint id))
+				return null;
+			lines.RemoveAt(0);
+			return id;
+		}
 	}
 	/// <summary>
 	/// Create a new node based on the contents of "saveFileLine"
@@ -150,7 +167,7 @@ public class BackupManager : I_Manager
 		//nodeId
 		//nodePath
 		//connected node ids
-		var nodeParameters = saveFileLine.Split(VariableManager.inst.saveFileSeperatorStr, StringSplitOptions.RemoveEmptyEntries);
+		var nodeParameters = saveFileLine.Split(GameManager.inst.variableManager.saveFileSeperatorStr, StringSplitOptions.RemoveEmptyEntries);
 		//get "nodeId" and return null if it isn't a uint
 		if (!uint.TryParse(nodeParameters[0], out nodeId)) {
 			Debug.LogWarning($"the line :{saveFileLine} has an invalid Id. It must be parsable to an uint");
@@ -161,21 +178,21 @@ public class BackupManager : I_Manager
 		//Create a list with connected node ids
 		for(int i = 2; i < nodeParameters.Length; i++) {
 			//get "connectedNodeId" and continue to the next connectedNodeId if it isn't a uint
-			if (!uint.TryParse(nodeParameters[i - 2], out uint connectedNodeId)) {
+			if (!uint.TryParse(nodeParameters[i], out uint connectedNodeId)) {
 				Debug.LogWarning($"in the line :{saveFileLine} is the {i - 2}th connected node invalide. It must be parsable to an uint");
 				continue;
 			}
 			connectedNodeIds.Add(connectedNodeId);
 		}
 		//Create a new node based on the contents of "saveFileLine"
-		DataNode newNode = NetContentManager.inst.NewNode(nodeId, connectedNodeIds, nodePath);
+		DataNode newNode = GameManager.inst.netContentManager.NewNode(nodePath, nodeId);
 		return newNode;
 	}
 	List<string> GetFilePaths(string directoryPath, string extention, int maxFolderDepth, int depth = 0)
 	{
 		var outFilePaths = new List<string>();
 		//Get all files in "directoryPath" and add them to "outFilePaths"
-		foreach (var filePath in Directory.GetFiles(directoryPath, $"*.{extention}"))
+		foreach (var filePath in Directory.GetFiles(directoryPath, $"*{extention}"))
 			outFilePaths.Add(filePath);
 		//loop through all subdirectories if "maxFolderDepth" isn't reached and add their contents to "outFilePaths"
 		foreach (var dir in Directory.GetDirectories(directoryPath)){
@@ -198,8 +215,8 @@ public class BackupManager : I_Manager
 		//If path is a file
 		if (File.Exists(path)) {
 			//If the file hasn't the .fnet extention it is invalide
-			if (Path.GetExtension(path) != VariableManager.inst.netSaveFileExtention) {
-				Debug.LogError($"the file: {path} doesn't have the {VariableManager.inst.netSaveFileExtention}");
+			if (Path.GetExtension(path) != GameManager.inst.variableManager.netSaveFileExtention) {
+				Debug.LogError($"the file: {path} doesn't have the {GameManager.inst.variableManager.netSaveFileExtention}");
 				return PathType.Invalid;
 			}
 			//If file has the .fnet connection

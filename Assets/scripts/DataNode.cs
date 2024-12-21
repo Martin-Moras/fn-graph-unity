@@ -14,6 +14,8 @@ public class DataNode
         this.nodeId = nodeId;
         if (connectedNodeIds == null) this.connectedNodeIds = new();
         else this.connectedNodeIds = connectedNodeIds;
+        if (connectedNodeIds == null) this.connectedNodeIds = new();
+        else this.connectedNodeIds = connectedNodeIds;
     }
 	public void SetPath(string path)
 	{

@@ -16,14 +16,6 @@ public class NetVisualManager : I_Manager
 	//how long the spring should be
 	public float springRestLenght;
 	public float springDamping;
-	#region Singleton
-	public static NetVisualManager inst { get; private set;}
-	public override void SingletonizeThis()
-	{
-		if (inst != null && inst != this) Destroy(this);
-		else inst = this;
-	}
-	#endregion
 	public override void Initialize()
 	{
 	}
@@ -33,17 +25,19 @@ public class NetVisualManager : I_Manager
 		VisualizeNewNodes();
 		DeVidualizeNodes();
 		ChangeVisualNodes();
-		ManageConnectionForces();
 		ManageSprite();
 		ManageConnectionLine();
 	}
+	private void FixedUpdate() {
+		ManageConnectionForces();
+	}
 	private void VisualizeNewNodes()
 	{
-		VisualizeNodes(NetContentManager.inst.thisFrame_newDataNodes);
+		VisualizeNodes(GameManager.inst.netContentManager.thisFrame_newDataNodes);
 	}
 	private void DeVidualizeNodes()
 	{
-		foreach (var dataNode in NetContentManager.inst.thisFrame_deletedDataNodes) {
+		foreach (var dataNode in GameManager.inst.netContentManager.thisFrame_deletedDataNodes) {
 			var visualNode = GetVisualNodeByDataNode(dataNode);
 			if (visualNode == null)
 				continue;
@@ -52,7 +46,7 @@ public class NetVisualManager : I_Manager
 	}
 	private void ChangeVisualNodes()
 	{
-		foreach (var dataNode in NetContentManager.inst.thisFrame_changedNodes) {
+		foreach (var dataNode in GameManager.inst.netContentManager.thisFrame_changedNodes) {
 			var visualNode = GetVisualNodeByDataNode(dataNode);
 			var newConnectedDataNodes = dataNode.connectedNodes.Except(visualNode.connections.Select(x => x.outNode.dataNode));
 			//find all connections in "visualNode.connections" which aren't contained in "dataNode.connectedNodes"
@@ -101,7 +95,7 @@ public class NetVisualManager : I_Manager
 	}
 	private VisualNode DataNodeToVisualNode(DataNode dataNode, Vector2 pos, bool connectToOther, bool connectOtersToThis)
 	{
-		var newVisualNode = Instantiate(VariableManager.inst.NodePrefab, (Vector3)pos, Quaternion.identity).GetComponent<VisualNode>();
+		var newVisualNode = Object.Instantiate(GameManager.inst.variableManager.NodePrefab, (Vector3)pos, Quaternion.identity).GetComponent<VisualNode>();
 		newVisualNode.NodeConstructor(dataNode, null);
 		if (connectToOther)
 			ConnectToOtherNodes(newVisualNode);
@@ -118,7 +112,7 @@ public class NetVisualManager : I_Manager
 			DeleteConection(connectedConnection);
 		}
 		thisFrame_DeletedVisualNodes.Add(node);
-		Destroy(node);
+		Object.Destroy(node);
 	}
 	private List<VisualNode> ConnectToOtherNodes(VisualNode node)
 	{
@@ -151,7 +145,7 @@ public class NetVisualManager : I_Manager
 		foreach (var node in allVisualNodes) {
 			node.sprite.color = Color.red;
 			// var renderer = node.GetComponent<SpriteRenderer>();
-			// var selectedTList = NetContentManager.inst.nodeTypeLists.Find(x => x.listPath == "selected.tlist");
+			// var selectedTList = GameManager.inst.netContentManager.nodeTypeLists.Find(x => x.listPath == "selected.tlist");
 			// if (selectedTList != null && selectedTList.nodes.Contains(node)) 
 			// 	renderer.color = Color.white;
 			// else renderer.color = Color.red; 
@@ -193,7 +187,7 @@ public class NetVisualManager : I_Manager
 	}
 	private Connection CreateConnection(VisualNode outNode)
 	{
-		var newConnetion = Instantiate(VariableManager.inst.ConnectionPrefab).GetComponent<Connection>();
+		var newConnetion = Object.Instantiate(GameManager.inst.variableManager.ConnectionPrefab).GetComponent<Connection>();
 		newConnetion.Constructor(outNode);
 		allConnections.Add(newConnetion);
 		thisFrame_newConnections.Add(newConnetion);
@@ -202,7 +196,7 @@ public class NetVisualManager : I_Manager
 	private void DeleteConection(Connection connection)
 	{
 		thisFrame_DeletedConnections.Add(connection);
-		Destroy(connection);
+		Object.Destroy(connection);
 	}
 	/// <summary>
 	/// applyes a spring force to each connection between nodes

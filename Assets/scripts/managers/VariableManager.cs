@@ -30,20 +30,13 @@ public class VariableManager : I_Manager
 	public string specialNodeName = "Special node";
 	#endregion Special nodes
 	private uint lastGeneratedId;
-	#region Singleton
-	public static VariableManager inst { get; private set;}
-	public override void SingletonizeThis()
-	{
-		if (inst != null && inst != this) Destroy(this);
-		else inst = this;
-	}
-	#endregion Singleton
 	public override void Initialize()
 	{
-		SingletonizeThis();
 		rootPath = Application.dataPath;
 		netSavePath = Path.Combine(rootPath, "saved_nets");
-		relativeSpecialNodeSavePath = "";;
+		relativeSpecialNodeSavePath = specialNodeName;
+		relativeSpecialNodeSavePath = Path.ChangeExtension(relativeSpecialNodeSavePath, netSaveFileExtention);
+
 	}
 	public uint GenerateId()
 	{

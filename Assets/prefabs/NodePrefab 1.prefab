@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 2620019769428279189}
   - component: {fileID: 146442051973128759}
   m_Layer: 0
-  m_Name: NodePrefab
+  m_Name: NodePrefab 1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -102,10 +102,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9fc2d9cf2ccaa7fbbb420eaf671b3cf8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  connections: []
-  sprite: {fileID: 0}
-  text: {fileID: 0}
-  size: 0
 --- !u!58 &6716558851688935296
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -215,7 +211,7 @@ PointEffector2D:
   m_ColliderMask:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_ForceMagnitude: 108.84
+  m_ForceMagnitude: 10
   m_ForceVariation: 0
   m_DistanceScale: 1
   m_ForceSource: 0

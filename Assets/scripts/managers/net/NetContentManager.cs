@@ -14,15 +14,6 @@ public class NetContentManager : I_Manager
 	public List<DataNode> thisFrame_newDataNodes = new();
 	public List<DataNode> thisFrame_deletedDataNodes = new();
 	public List<DataNode> thisFrame_changedNodes = new();
-	#region Singleton
-	
-	public static NetContentManager inst { get; private set;}
-	public override void SingletonizeThis()
-	{
-		if (inst != null && inst != this) Destroy(this);
-		else inst = this;
-	}
-	#endregion
 	
 	public override void Initialize()
 	{
@@ -37,14 +28,23 @@ public class NetContentManager : I_Manager
 	/// </summary>
 	/// <param name="nodePath"></param>
 	/// <returns></returns>
-	public DataNode NewNode(uint nodeId, List<uint> connectedNodeIds, string nodePath)
+	public DataNode NewNode(string nodePath, uint? nodeId = null, List<uint> connectedNodeIds = null)
 	{
-		//if path = "" change it to a random number
+		//if path = "" change it to a "unnamed"
 		if (nodePath == "")
-			nodePath = UnityEngine.Random.Range(0, int.MaxValue).ToString(); 
+			nodePath = "unnamed"; 
+		//if nodeId = null generate one
+		if (nodeId == null)
+			nodeId = GameManager.inst.variableManager.GenerateId();
+		//if nodeId allready exists return null
+		else if (GetNodeById((uint)nodeId) != null) {
+			Debug.LogWarning($"NewNode: the there is allready a node with the Id: {nodeId}");
+			return null;
+		}
 		//create a new node
-		var newNode = new DataNode(nodePath, nodeId, connectedNodeIds);
+		var newNode = new DataNode(nodePath, (uint)nodeId, connectedNodeIds);
 		thisFrame_newDataNodes.Add(newNode);
+		HandleNodeConnection(GameManager.inst.specialNodeManager.allNodes_sp, newNode);
 		if (connectedNodeIds != null && connectedNodeIds.Count > 0)
 			SetConnectedDataNodesBasedOnConnectedNodeId(newNode);
 		return newNode;
@@ -53,6 +53,10 @@ public class NetContentManager : I_Manager
 	{
 		//loop through all nodes that connect to "dataNode"
 		var allNodes = GetAllNodes();
+		if (allNodes == null) {
+			Debug.LogWarning("SetConnectedDataNodesBasedOnConnectedNodeId: allNodes are null");
+			return;
+		}
 		var inGoingConnectedNodes = new List<DataNode>();
 		foreach (var connectedId in dataNode.connectedNodeIds) {
 			var connectedNode = allNodes.Find(x=>x.nodeId == connectedId);
@@ -66,7 +70,7 @@ public class NetContentManager : I_Manager
 		}
 		//connect dataNode to all nodes
 		foreach (var connectedNodeId in dataNode.connectedNodeIds) {
-			var outGoingConnectedNode = GetAllNodes().Find(x=>x.nodeId == connectedNodeId);
+			var outGoingConnectedNode = allNodes.Find(x=>x.nodeId == connectedNodeId);
 			if (outGoingConnectedNode == null)
 				continue;
 			HandleNodeConnection(dataNode, outGoingConnectedNode);
@@ -75,7 +79,7 @@ public class NetContentManager : I_Manager
 	public DataNode ConnectNewNode(DataNode node)
 	{
 		//instantiate a new node
-		var newNode = new DataNode("", VariableManager.inst.GenerateId(), null);
+		var newNode = NewNode("Unnamed");
 		HandleNodeConnection(node, newNode);
 		return newNode;
 	}
@@ -94,7 +98,7 @@ public class NetContentManager : I_Manager
 			case ConnectType.Connect:
 				if (!fromNode.connectedNodes.Exists(x=>x == toNode))
 					fromNode.connectedNodes.Add(toNode);
-				if (!fromNode.connectedNodes.Exists(x=>x.nodeId == toNode.nodeId))
+				if (!fromNode.connectedNodeIds.Exists(x=>x == toNode.nodeId))
 					fromNode.connectedNodeIds.Add(toNode.nodeId);
 				thisFrame_changedNodes.Add(fromNode);
 				thisFrame_changedNodes.Add(toNode);
@@ -125,23 +129,38 @@ public class NetContentManager : I_Manager
 			thisFrame_changedNodes.Remove(node);
 		}
 	}
-	public DataNode GetNode(string nodePath, bool createIfDoesntExist)
+	public DataNode GetNodeById(uint nodeId)
 	{
-		DataNode newSelectedNode = GetAllNodes().ToList().Find(x=>x.nodePath == nodePath);
-			if (newSelectedNode == null && createIfDoesntExist)
-				newSelectedNode = NewNode(VariableManager.inst.GenerateId(), null, nodePath);
+		var allNodes = GetAllNodes();
+		if (allNodes == null)
+			return null;
+		var newSelectedNode = allNodes.Find(x=>x.nodeId == nodeId);
 		return newSelectedNode;
 	}
-	
+	public List<DataNode> GetNodeByName(string nodePath)
+	{
+		var allNodes = GetAllNodes();
+		if (allNodes == null)
+			return null;
+		var newSelectedNode = allNodes.FindAll(x=>x.nodePath == nodePath);
+		return newSelectedNode;
+	}
 	public List<DataNode> GetAllNodes()
 	{
-		return SpecialNodeManager.inst.allNodes_sp.connectedNodes;
+		if (GameManager.inst.specialNodeManager.allNodes_sp == null)
+			return null;
+		return GameManager.inst.specialNodeManager.allNodes_sp.connectedNodes;
 	}
 	public void DeleteNode(DataNode node)
 	{
 		thisFrame_deletedDataNodes.Add(node);
 		//Remove all in going connections
-		foreach (var refNode in GetAllNodes().ToList().FindAll(x => x.connectedNodeIds.Exists(x => x == node.nodeId))) {
+		var allNodes = GetAllNodes();
+		if (allNodes == null) {
+			Debug.LogWarning("Delete Node: allNodes are null");
+			return;
+		}
+		foreach (var refNode in allNodes.ToList().FindAll(x => x.connectedNodeIds.Exists(x => x == node.nodeId))) {
 			HandleNodeConnection(refNode, node, ConnectType.Disconnect);
 		}
 		//Remove all out going connections
@@ -150,7 +169,7 @@ public class NetContentManager : I_Manager
 		}
 	}
 	public void ConnectSelectedNodes(DataNode nodeToConnectTo, ConnectType connectType, bool reverseConnect){
-		var selectedTypeList = SpecialNodeManager.inst.selected_sp;
+		var selectedTypeList = GameManager.inst.specialNodeManager.selected_sp;
 		if (selectedTypeList == null || 
 			selectedTypeList.connectedNodes == null) 
 			return;
