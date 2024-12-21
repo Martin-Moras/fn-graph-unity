@@ -16,17 +16,12 @@ public class GameManager : MonoBehaviour
 	public CameraManager cameraManager { get; private set; }
 	#region Singleton
 	public static GameManager inst { get; private set;}
-	private static void SingletonizeThis()
+	private void SingletonizeThis()
 	{
-		var thisClass = FindObjectOfType<GameManager>();
+		var thisClass = this;
 		if (inst != null && inst != thisClass) Destroy(thisClass);
 		else inst = thisClass;
 	}
-	[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterAssembliesLoaded)]
-    private static void OnRuntimeMethodLoad()
-    {
-		SingletonizeThis();
-    }
 	#endregion
 	private void Awake() {
 		SingletonizeThis();
@@ -53,6 +48,8 @@ public class GameManager : MonoBehaviour
 	}
 	void Update()
 	{
+		if (inst == null)
+			SingletonizeThis();
 		// netInteractionManager.ManageInputs();j
 		variableManager.ManagerUpdate();
 		netInteractionManager.ManagerUpdate();

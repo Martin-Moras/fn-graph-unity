@@ -214,8 +214,8 @@ public class NetVisualManager : I_Manager
 				var connectedNodeRb = connectedConnection.outNode.GetComponent<Rigidbody2D>();
 				var nodeRb = node.GetComponent<Rigidbody2D>();
 				//get the velocity relative to the direction of the other node
-				var nodeSpringVel = Vector2.Dot(nodeRb.velocity, relativeNodePos.normalized);
-				var connectedNodeSpringVel = Vector2.Dot(connectedNodeRb.velocity, relativeNodePos.normalized);
+				var nodeSpringVel = Vector2.Dot(nodeRb.linearVelocity, relativeNodePos.normalized);
+				var connectedNodeSpringVel = Vector2.Dot(connectedNodeRb.linearVelocity, relativeNodePos.normalized);
 				//springVel shows how fast the spring is expanding/retracting
 				var springVel = nodeSpringVel - connectedNodeSpringVel;
 				//apply the damping coeficent to springVel
