@@ -31,7 +31,7 @@ public partial class @MainInput: IInputActionCollection2, IDisposable
                     ""name"": ""NewNode"",
                     ""type"": ""Button"",
                     ""id"": ""4f645a60-c0b8-4801-8a87-2506b5bf3fb8"",
-                    ""expectedControlType"": ""Button"",
+                    ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
