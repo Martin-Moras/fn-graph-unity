@@ -58,11 +58,15 @@ public class NetInteractionManager : I_Manager
 	public DataNode GetNodeUnderCursor(){
 		var objectsUnderCursor = Physics2D.OverlapCircleAll(mousePosWorld, GameManager.inst.variableManager.nodeSelectionRadius);
 
-		Collider2D closestCollider = objectsUnderCursor.FirstOrDefault();
+		Collider2D closestCollider = null;
 		foreach (var objectUnderCursor in objectsUnderCursor)
 		{
-			if (objectUnderCursor.GetComponent<VisualNode>() == null) continue;
-			if (objectUnderCursor.isTrigger) continue;
+			if (objectUnderCursor.GetComponent<VisualNode>() == null) 
+				continue;
+			if (objectUnderCursor.isTrigger) 
+				continue;
+			if (closestCollider == null) 
+				closestCollider = objectUnderCursor;
 			var currObjectDist = ((Vector2)objectUnderCursor.transform.position - mousePosWorld).magnitude;
 			var closestColliderDist = ((Vector2)closestCollider.transform.position - mousePosWorld).magnitude;
 			//if the current objectUnderCursor is closer than closestCollider set closestCollider to it

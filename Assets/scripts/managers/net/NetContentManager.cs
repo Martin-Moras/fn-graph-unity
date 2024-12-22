@@ -38,7 +38,7 @@ public class NetContentManager : I_Manager
 			nodeId = GameManager.inst.variableManager.GenerateId();
 		//if nodeId allready exists return null
 		else if (GetNodeById((uint)nodeId) != null) {
-			Debug.LogWarning($"NewNode: the there is allready a node with the Id: {nodeId}");
+			
 			return null;
 		}
 		//create a new node

@@ -56,15 +56,17 @@ public class GameManager : MonoBehaviour
 		netContentManager.ManagerUpdate();
 		netBehaviourManager.ManagerUpdate();
 		foreach (var newNode in netContentManager.thisFrame_newDataNodes) {
-			if (newNode != specialNodeManager.allNodes_sp && newNode != specialNodeManager.saverNode_sp)
+			if (newNode != specialNodeManager.allNodes_sp && 
+				newNode != specialNodeManager.saverNode_sp && 
+				newNode != temp_allsaver)
 				netContentManager.HandleNodeConnection(temp_allsaver, newNode);
 		}
 		foreach (var deletedNode in netContentManager.thisFrame_deletedDataNodes)
 			netContentManager.HandleNodeConnection(temp_allsaver, deletedNode, ConnectType.Disconnect);
 		netVisualManager.ManagerUpdate();
 		specialNodeManager.ManagerUpdate();
-		cameraManager.ManagerUpdate();
 		backupManager.ManagerUpdate();
+		cameraManager.ManagerUpdate();
 
 
 		ClearPerFrameLists();

@@ -185,7 +185,8 @@ public class BackupManager : I_Manager
 			connectedNodeIds.Add(connectedNodeId);
 		}
 		//Create a new node based on the contents of "saveFileLine"
-		DataNode newNode = GameManager.inst.netContentManager.NewNode(nodePath, nodeId);
+		DataNode newNode = GameManager.inst.netContentManager.NewNode(nodePath, nodeId, connectedNodeIds);
+
 		return newNode;
 	}
 	List<string> GetFilePaths(string directoryPath, string extention, int maxFolderDepth, int depth = 0)

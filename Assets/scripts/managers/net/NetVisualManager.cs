@@ -26,7 +26,7 @@ public class NetVisualManager : I_Manager
 		DeVidualizeNodes();
 		ChangeVisualNodes();
 		ManageSprite();
-		ManageConnectionLine();
+		DrawConnectionLine();
 	}
 	private void FixedUpdate() {
 		ManageConnectionForces();
@@ -74,7 +74,7 @@ public class NetVisualManager : I_Manager
 			var newVisualNodes = new List<VisualNode>();
 			
 			foreach(var node in nodesToVisualize) {
-				var newVisualNode = DataNodeToVisualNode(node, Vector2.one * i / 3, false, false);
+				var newVisualNode = DataNodeToVisualNode(node, new Vector2(i + Random.Range(0, 3), i + Random.Range(0, 3)), false, false);
 				newVisualNodes.Add(newVisualNode);
 				i++;
 			}
@@ -143,7 +143,10 @@ public class NetVisualManager : I_Manager
 	}
 	private void ManageSprite(){
 		foreach (var node in allVisualNodes) {
-			node.sprite.color = Color.red;
+			if (GameManager.inst.specialNodeManager.selected_sp.connectedNodes.Contains(node.dataNode))
+				node.sprite.color = Color.white;
+			else
+				node.sprite.color = Color.red;
 			// var renderer = node.GetComponent<SpriteRenderer>();
 			// var selectedTList = GameManager.inst.netContentManager.nodeTypeLists.Find(x => x.listPath == "selected.tlist");
 			// if (selectedTList != null && selectedTList.nodes.Contains(node)) 
@@ -151,7 +154,7 @@ public class NetVisualManager : I_Manager
 			// else renderer.color = Color.red; 
 		}
 	}
-	private void ManageConnectionLine()
+	private void DrawConnectionLine()
 	{
 		foreach (var node in allVisualNodes){
 			foreach (var connection in node.connections) {
@@ -196,36 +199,32 @@ public class NetVisualManager : I_Manager
 	private void DeleteConection(Connection connection)
 	{
 		thisFrame_DeletedConnections.Add(connection);
-		Object.Destroy(connection);
+		Object.Destroy(connection.gameObject);
 	}
 	/// <summary>
 	/// applyes a spring force to each connection between nodes
 	/// </summary>
-	private void ManageConnectionForces(){
+	private void ManageConnectionForces()
+	{
 		foreach (var node in allVisualNodes)
 		{
 			foreach (var connectedConnection in node.connections)
 			{
 				var relativeNodePos = connectedConnection.outNode.transform.position - node.transform.position;
 				var nodeDistance = relativeNodePos.magnitude;
-				//the difference between node distance and how far they should be apart
-				var offsetFromSpringRestLenght = nodeDistance - springRestLenght;
-				//get rigitbodys from node and connectedNode
+				var offsetFromSpringRestLength = nodeDistance - springRestLenght;
+				var direction = relativeNodePos.normalized;
+
 				var connectedNodeRb = connectedConnection.outNode.GetComponent<Rigidbody2D>();
 				var nodeRb = node.GetComponent<Rigidbody2D>();
-				//get the velocity relative to the direction of the other node
-				var nodeSpringVel = Vector2.Dot(nodeRb.linearVelocity, relativeNodePos.normalized);
-				var connectedNodeSpringVel = Vector2.Dot(connectedNodeRb.linearVelocity, relativeNodePos.normalized);
-				//springVel shows how fast the spring is expanding/retracting
-				var springVel = nodeSpringVel - connectedNodeSpringVel;
-				//apply the damping coeficent to springVel
-				var dampingForce = springVel * springDamping;
-				
-				//calcualte the force that should be applied both nodes
-				var springForce = offsetFromSpringRestLenght * springStiffness - dampingForce;
-				//apply spring force
-				nodeRb.AddForce(relativeNodePos.normalized * springForce);
-				connectedNodeRb.AddForce(relativeNodePos.normalized * -springForce);
+
+				var relativeVelocity = nodeRb.linearVelocity - connectedNodeRb.linearVelocity;
+				var dampingForce = Vector2.Dot(relativeVelocity, direction) * springDamping;
+
+				var springForce = (offsetFromSpringRestLength * springStiffness - dampingForce) * direction;
+
+				nodeRb.AddForce(springForce);
+				connectedNodeRb.AddForce(-springForce);
 			}
 		}
 	}
