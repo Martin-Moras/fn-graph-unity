@@ -23,12 +23,16 @@ public class VariableManager : I_Manager
 	public string netSavePath {get; private set;}
 	public string relativeSpecialNodeSavePath;
 	public char[] saveFileSeperatorStr = new[] {';'};
-	public string netSaveFileExtentionPattern = @"\.fnet$";
+	public string netSaveFileExtentionRegex = @"\.fnet$";
 	public string netSaveFileExtention = @".fnet";
 	#endregion Save/Load
 	#region Special nodes
 	public string specialNodeName = "Special node";
 	#endregion Special nodes
+	#region Visuals
+	public Material oneWayConnectionMat;
+	public Material twoWayConnectionMat;
+	#endregion
 	private uint lastGeneratedId;
 	public override void Initialize()
 	{

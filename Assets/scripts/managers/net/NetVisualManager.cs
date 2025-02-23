@@ -187,14 +187,16 @@ public class NetVisualManager : I_Manager
 			default:
 				return null;
 		}
-	}
-	private Connection CreateConnection(VisualNode outNode)
-	{
-		var newConnetion = Object.Instantiate(GameManager.inst.variableManager.ConnectionPrefab).GetComponent<Connection>();
-		newConnetion.Constructor(outNode);
-		allConnections.Add(newConnetion);
-		thisFrame_newConnections.Add(newConnetion);
-		return newConnetion;
+	
+	
+		Connection CreateConnection(VisualNode outNode)
+		{
+			var newConnetion = Object.Instantiate(GameManager.inst.variableManager.ConnectionPrefab).GetComponent<Connection>();
+			newConnetion.Constructor(outNode);
+			allConnections.Add(newConnetion);
+			thisFrame_newConnections.Add(newConnetion);
+			return newConnetion;
+		}
 	}
 	private void DeleteConection(Connection connection)
 	{
