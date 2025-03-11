@@ -28,7 +28,7 @@ public class NetContentManager : I_Manager
 	/// </summary>
 	/// <param name="nodePath"></param>
 	/// <returns></returns>
-	public DataNode NewNode(string nodePath, uint? nodeId = null, List<uint> connectedNodeIds = null)
+	public DataNode NewNode(string nodePath = "", uint? nodeId = null, List<uint> connectedNodeIds = null)
 	{
 		//if path = "" change it to a "unnamed"
 		if (nodePath == "")
@@ -124,7 +124,7 @@ public class NetContentManager : I_Manager
 			.FindAll(changedNode => 
 				thisFrame_newDataNodes.Contains(changedNode) ||
 				thisFrame_deletedDataNodes.Contains(changedNode));
-		//delete all nodes from "changedNodes" which also ocurred in "newDataNodes" or "deletedDataNodes"
+		//remove all nodes from "thisFrame_changedNodes" which also ocurred in "newDataNodes" or "deletedDataNodes"
 		foreach (var node in nodesToRemove)	{
 			thisFrame_changedNodes.Remove(node);
 		}

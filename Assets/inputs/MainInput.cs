@@ -104,7 +104,7 @@ public partial class @MainInput: IInputActionCollection2, IDisposable
                     ""name"": ""Select"",
                     ""type"": ""Button"",
                     ""id"": ""eda6efd3-28af-4a8f-8cb0-a32da59f3704"",
-                    ""expectedControlType"": ""Button"",
+                    ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
@@ -131,7 +131,7 @@ public partial class @MainInput: IInputActionCollection2, IDisposable
                     ""name"": ""NewChildNode"",
                     ""type"": ""Button"",
                     ""id"": ""eb9fa6c8-508f-4d63-9442-3c2542a00176"",
-                    ""expectedControlType"": ""Button"",
+                    ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
@@ -171,20 +171,18 @@ public partial class @MainInput: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""SelectMultiple"",
+                    ""type"": ""Button"",
+                    ""id"": ""2a654150-0721-4876-aa2a-f54bc1b8eade"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
-                {
-                    ""name"": """",
-                    ""id"": ""fb020ec3-fa62-40f7-8ce0-8b6e33bb21a1"",
-                    ""path"": ""<Keyboard>/e"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": ""Pc"",
-                    ""action"": ""NewNode"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
                 {
                     ""name"": """",
                     ""id"": ""b3444824-b7f6-44cb-93d5-0807a985984c"",
@@ -459,6 +457,50 @@ public partial class @MainInput: IInputActionCollection2, IDisposable
                     ""action"": ""ChangeCameraSize"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""c5a0145d-1098-4871-8168-91c4c6acda8e"",
+                    ""path"": ""<Keyboard>/e"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""NewNode"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""One Modifier"",
+                    ""id"": ""1a3a3deb-0194-4f79-9f4b-351334d11155"",
+                    ""path"": ""OneModifier"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SelectMultiple"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""modifier"",
+                    ""id"": ""19f77ec6-2f3d-4c1b-a261-2818ab6042c2"",
+                    ""path"": ""<Keyboard>/ctrl"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SelectMultiple"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""binding"",
+                    ""id"": ""d25b8a72-3cf7-4429-86ff-db5faee58f0b"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SelectMultiple"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
                 }
             ]
         }
@@ -493,6 +535,7 @@ public partial class @MainInput: IInputActionCollection2, IDisposable
         m_mainScene_ChangeCameraSize = m_mainScene.FindAction("ChangeCameraSize", throwIfNotFound: true);
         m_mainScene_ConnectSelectedNodes = m_mainScene.FindAction("ConnectSelectedNodes", throwIfNotFound: true);
         m_mainScene_ConnectToSelectedNodes = m_mainScene.FindAction("ConnectToSelectedNodes", throwIfNotFound: true);
+        m_mainScene_SelectMultiple = m_mainScene.FindAction("SelectMultiple", throwIfNotFound: true);
     }
 
     ~@MainInput()
@@ -582,6 +625,7 @@ public partial class @MainInput: IInputActionCollection2, IDisposable
     private readonly InputAction m_mainScene_ChangeCameraSize;
     private readonly InputAction m_mainScene_ConnectSelectedNodes;
     private readonly InputAction m_mainScene_ConnectToSelectedNodes;
+    private readonly InputAction m_mainScene_SelectMultiple;
     /// <summary>
     /// Provides access to input actions defined in input action map "mainScene".
     /// </summary>
@@ -629,6 +673,10 @@ public partial class @MainInput: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "mainScene/ConnectToSelectedNodes".
         /// </summary>
         public InputAction @ConnectToSelectedNodes => m_Wrapper.m_mainScene_ConnectToSelectedNodes;
+        /// <summary>
+        /// Provides access to the underlying input action "mainScene/SelectMultiple".
+        /// </summary>
+        public InputAction @SelectMultiple => m_Wrapper.m_mainScene_SelectMultiple;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -682,6 +730,9 @@ public partial class @MainInput: IInputActionCollection2, IDisposable
             @ConnectToSelectedNodes.started += instance.OnConnectToSelectedNodes;
             @ConnectToSelectedNodes.performed += instance.OnConnectToSelectedNodes;
             @ConnectToSelectedNodes.canceled += instance.OnConnectToSelectedNodes;
+            @SelectMultiple.started += instance.OnSelectMultiple;
+            @SelectMultiple.performed += instance.OnSelectMultiple;
+            @SelectMultiple.canceled += instance.OnSelectMultiple;
         }
 
         /// <summary>
@@ -720,6 +771,9 @@ public partial class @MainInput: IInputActionCollection2, IDisposable
             @ConnectToSelectedNodes.started -= instance.OnConnectToSelectedNodes;
             @ConnectToSelectedNodes.performed -= instance.OnConnectToSelectedNodes;
             @ConnectToSelectedNodes.canceled -= instance.OnConnectToSelectedNodes;
+            @SelectMultiple.started -= instance.OnSelectMultiple;
+            @SelectMultiple.performed -= instance.OnSelectMultiple;
+            @SelectMultiple.canceled -= instance.OnSelectMultiple;
         }
 
         /// <summary>
@@ -836,5 +890,12 @@ public partial class @MainInput: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnConnectToSelectedNodes(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "SelectMultiple" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnSelectMultiple(InputAction.CallbackContext context);
     }
 }

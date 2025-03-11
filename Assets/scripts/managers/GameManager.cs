@@ -51,10 +51,8 @@ public class GameManager : MonoBehaviour
 		if (inst == null)
 			SingletonizeThis();
 		// netInteractionManager.ManageInputs();j
-		variableManager.ManagerUpdate();
 		netInteractionManager.ManagerUpdate();
 		netContentManager.ManagerUpdate();
-		netBehaviourManager.ManagerUpdate();
 		foreach (var newNode in netContentManager.thisFrame_newDataNodes) {
 			if (newNode != specialNodeManager.allNodes_sp && 
 				newNode != specialNodeManager.saverNode_sp && 
@@ -64,10 +62,13 @@ public class GameManager : MonoBehaviour
 		foreach (var deletedNode in netContentManager.thisFrame_deletedDataNodes)
 			netContentManager.HandleNodeConnection(temp_allsaver, deletedNode, ConnectType.Disconnect);
 		netVisualManager.ManagerUpdate();
+		#region uniplemented
 		specialNodeManager.ManagerUpdate();
 		backupManager.ManagerUpdate();
 		cameraManager.ManagerUpdate();
-
+		variableManager.ManagerUpdate();
+		netBehaviourManager.ManagerUpdate();
+		#endregion
 
 		ClearPerFrameLists();
 		/*

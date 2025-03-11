@@ -32,6 +32,7 @@ public class VariableManager : I_Manager
 	#region Visuals
 	public Material oneWayConnectionMat;
 	public Material twoWayConnectionMat;
+	public Color selectedNodeColor;
 	#endregion
 	private uint lastGeneratedId;
 	public override void Initialize()

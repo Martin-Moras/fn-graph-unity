@@ -144,7 +144,7 @@ public class NetVisualManager : I_Manager
 	private void ManageSprite(){
 		foreach (var node in allVisualNodes) {
 			if (GameManager.inst.specialNodeManager.selected_sp.connectedNodes.Contains(node.dataNode))
-				node.sprite.color = Color.white;
+				node.sprite.color = GameManager.inst.variableManager.selectedNodeColor;
 			else
 				node.sprite.color = Color.red;
 			// var renderer = node.GetComponent<SpriteRenderer>();
