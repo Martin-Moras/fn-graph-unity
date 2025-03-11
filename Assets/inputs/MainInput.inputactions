@@ -27,7 +27,7 @@
                     "name": "Load",
                     "type": "Button",
                     "id": "23472ed6-2f18-4021-a9b4-7797377218ad",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false

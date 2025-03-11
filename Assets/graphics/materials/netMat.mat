@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-2363589684774954106
+--- !u!114 &-5606677617038308230
 MonoBehaviour:
   m_ObjectHideFlags: 11
   m_CorrespondingSourceObject: {fileID: 0}
@@ -20,8 +20,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: OneWayConnectionMat
-  m_Shader: {fileID: -6465566751694194690, guid: f10a219df9826b1a6806c71076241dcd, type: 3}
+  m_Name: netMat
+  m_Shader: {fileID: -6465566751694194690, guid: 8d9211b8fd4d9b6bbb994431c9bba936, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
@@ -36,10 +36,6 @@ Material:
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
-    - _Texture2D:
-        m_Texture: {fileID: 2800000, guid: c78471b619285d317ac250c8ff0a6d09, type: 3}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
     - unity_Lightmaps:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -53,8 +49,11 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Ints: []
-    m_Floats:
-    - _TilingAmount: 2.61
-    m_Colors: []
+    m_Floats: []
+    m_Colors:
+    - _Pos1: {r: -0.29, g: 0, b: 0, a: 0}
+    - _Pos1_1: {r: 0.2, g: 0, b: 0, a: 0}
+    - _Pos1_2: {r: 0, g: 0, b: 0, a: 0}
+    - _Pos1_3: {r: 0, g: 0, b: 0, a: 0}
   m_BuildTextureStacks: []
   m_AllowLocking: 1

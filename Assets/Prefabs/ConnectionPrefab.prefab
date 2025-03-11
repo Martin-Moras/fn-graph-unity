@@ -92,8 +92,8 @@ LineRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Positions:
-  - {x: 6.4, y: 4.65, z: 0}
-  - {x: 0, y: 1, z: 0}
+  - {x: 0, y: 0, z: 0}
+  - {x: 1, y: 0, z: 0}
   m_Parameters:
     serializedVersion: 3
     widthMultiplier: 1
@@ -102,12 +102,21 @@ LineRenderer:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: 0.2960894
-        inSlope: -2.289269
-        outSlope: -2.289269
-        tangentMode: 0
+        value: 1
+        inSlope: 0
+        outSlope: -1.0079051
+        tangentMode: 69
         weightedMode: 0
-        inWeight: 0.22797967
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 0.99215686
+        value: 0
+        inSlope: -1.0079051
+        outSlope: 0
+        tangentMode: 5
+        weightedMode: 0
+        inWeight: 0.04350613
         outWeight: 0
       m_PreInfinity: 2
       m_PostInfinity: 2
@@ -145,7 +154,7 @@ LineRenderer:
     numCornerVertices: 0
     numCapVertices: 0
     alignment: 0
-    textureMode: 1
+    textureMode: 0
     textureScale: {x: 1, y: 1}
     shadowBias: 0.5
     generateLightingData: 0
